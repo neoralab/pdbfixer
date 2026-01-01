@@ -21,6 +21,12 @@ dependencies = [
   "openmm >= 8.2",
   "legacy-cgi",
 ]
+
+[project.optional-dependencies]
+tests = [
+  "pytest",
+  "openmm >= 8.2",
+]
 classifiers = [
   "Development Status :: 5 - Production/Stable",
   "Intended Audience :: Science/Research",
