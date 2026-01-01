@@ -15,7 +15,7 @@ authors = [
   { name = "Neoralab" },
 ]
 license = { file = "LICENSE" }
-requires-python = ">=3.13"
+requires-python = ">=3.11"
 dependencies = [
   "numpy",
   "openmm >= 8.2",
