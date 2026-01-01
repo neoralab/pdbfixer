@@ -13,6 +13,8 @@ on:
 jobs:
   build_test:
     runs-on: ubuntu-latest
+    env:
+      GITHUB_ACTION: "true"
     strategy:
       matrix:
         python-version: ["3.11", "3.12"]
@@ -33,8 +35,5 @@ jobs:
 
       - name: Run tests
         run: |
-          if [[ "${RUN_SLOW_TESTS}" == "1" ]]; then
-            pytest -vs tests
-          else
-            pytest -vs -m "not slow" tests
-          fi
+          pytest -vs tests
+      

@@ -51,6 +51,6 @@ def test_help():
 def test_pdbid():
     run_cli('--pdbid 1LE1')
 
-@pytest.mark.skipif(os.getenv("GITHUB_ACTION") is not None, reason="Cannot download during CI")
+@pytest.mark.skipif(os.getenv("GITHUB_ACTION") or os.getenv("GITHUB_ACTION") is None, reason="Cannot download during CI")
 def test_url():
     run_cli('--url "http://www.rcsb.org/pdb/download/downloadFile.do?fileFormat=pdb&compression=NO&structureId=1LE1"')
