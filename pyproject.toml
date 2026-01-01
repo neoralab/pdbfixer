@@ -2,12 +2,13 @@
 requires = [
   "setuptools>=69",
   "wheel",
+  "versioningit",
 ]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "pdbfixer"
-version = "1.12.0"
+dynamic = ["version"]
 description = "Fixes problems in PDB files"
 readme = "README.md"
 authors = [
@@ -61,3 +62,6 @@ pythonpath = ["src"]
 markers = [
   "slow: exercises long-running, network-heavy integration scenarios",
 ]
+
+[tool.versioningit]
+fallback-version = "0+unknown"

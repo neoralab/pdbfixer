@@ -42,6 +42,18 @@ conda install -c conda-forge pdbfixer
 
 Alternatively you can install from source, as described in the manual.
 
+### Versioning
+
+PDBFixer uses [versioningit](https://versioningit.readthedocs.io/) to derive
+its version from Git tags. Building from a source checkout therefore requires
+either a cloned repository with Git metadata or a source distribution that
+already includes the generated version. To see the version that will be used
+for a build, run:
+
+```
+python -m versioningit
+```
+
 ## Usage
 
 PDBFixer is now distributed purely as a Python API. The historical web and command-line interfaces have been removed in favour of direct use from Python code.

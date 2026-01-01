@@ -29,7 +29,11 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 from __future__ import print_function
 __author__ = "Peter Eastman"
-__version__ = "1.0"
+from importlib.metadata import PackageNotFoundError, version
+try:
+    __version__ = version("pdbfixer")
+except PackageNotFoundError:
+    __version__ = "0+unknown"
 
 import openmm.app as app
 import openmm.app.element as elem

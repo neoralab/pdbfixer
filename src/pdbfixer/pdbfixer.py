@@ -28,9 +28,13 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 from __future__ import absolute_import
 from dataclasses import dataclass
+from importlib.metadata import PackageNotFoundError, version
 from typing import Literal, Optional
 __author__ = "Peter Eastman"
-__version__ = "1.7"
+try:
+    __version__ = version("pdbfixer")
+except PackageNotFoundError:
+    __version__ = "0+unknown"
 
 import openmm as mm
 import openmm.app as app
