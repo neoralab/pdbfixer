@@ -19,7 +19,6 @@ requires-python = ">=3.11"
 dependencies = [
   "numpy",
   "openmm >= 8.2",
-  "legacy-cgi",
 ]
 classifiers = [
   "Development Status :: 5 - Production/Stable",
@@ -44,9 +43,6 @@ tests = [
 [project.urls]
 Homepage = "https://github.com/neoralab/pdbfixer"
 Repository = "https://github.com/neoralab/pdbfixer"
-
-[project.scripts]
-pdbfixer = "pdbfixer.pdbfixer:main"
 
 [tool.setuptools]
 include-package-data = true
