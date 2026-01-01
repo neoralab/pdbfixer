@@ -53,3 +53,7 @@ include = ["pdbfixer"]
 
 [tool.setuptools.package-data]
 pdbfixer = ["**/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
