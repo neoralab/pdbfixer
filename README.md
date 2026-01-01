@@ -9,7 +9,7 @@
 PDBFixer
 ========
 
-PDBFixer is an easy to use application for fixing problems in Protein Data Bank files in preparation for simulating them.  It can automatically fix the following problems:
+PDBFixer is an easy to use Python API for fixing problems in Protein Data Bank files in preparation for simulating them.  It can automatically fix the following problems:
 
 - Add missing heavy atoms.
 - Add missing hydrogen atoms.
@@ -41,3 +41,17 @@ conda install -c conda-forge pdbfixer
 ```
 
 Alternatively you can install from source, as described in the manual.
+
+## Usage
+
+PDBFixer is now distributed purely as a Python API. The historical web and command-line interfaces have been removed in favour of direct use from Python code.
+
+```python
+from pdbfixer import PDBFixer
+
+fixer = PDBFixer(filename="input.pdb")
+fixer.findMissingResidues()
+fixer.findMissingAtoms()
+fixer.addMissingAtoms()
+fixer.addMissingHydrogens(pH=7.0)
+```

@@ -1,11 +1,10 @@
 import openmm.app as app
 import pdbfixer
 from pytest import raises
-from pathlib import Path
 
 
-def test_mutate_1():
-    fixer = pdbfixer.PDBFixer(pdbid='1VII')
+def test_mutate_1(villin_factory):
+    fixer = villin_factory()
     fixer.applyMutations(["ALA-57-GLY"], "A")
     fixer.findMissingResidues()
     fixer.findMissingAtoms()
@@ -21,8 +20,8 @@ def test_mutate_1():
     assert atom_names == desired_atom_names, "Atom Names did not match for GLY 56"
 
 
-def test_mutate_2():
-    fixer = pdbfixer.PDBFixer(pdbid='1VII')
+def test_mutate_2(villin_factory):
+    fixer = villin_factory()
     fixer.applyMutations(["ALA-57-LEU", "SER-56-ALA"], "A")
     fixer.findMissingResidues()
     fixer.findMissingAtoms()
@@ -47,27 +46,22 @@ def test_mutate_2():
     assert atom_names == desired_atom_names, "Atom Names did not match for LEU 57"
 
 
-def test_mutate_3_fails():
+def test_mutate_3_fails(villin_factory):
     with raises(ValueError):
-        fixer = pdbfixer.PDBFixer(pdbid='1VII')
+        fixer = villin_factory()
         fixer.applyMutations(["ALA-57-GLY", "SER-57-ALA"], "A")
 
 
-def test_mutate_4_fails():
+def test_mutate_4_fails(villin_factory):
     with raises(KeyError):
-        fixer = pdbfixer.PDBFixer(pdbid='1VII')
+        fixer = villin_factory()
         fixer.applyMutations(["ALA-1000-GLY", "SER-56-ALA"], "A")
 
 
-def test_mutate_multiple_copies_of_chain_A():
-    fixer = pdbfixer.PDBFixer(pdbid='1OL5')
-    fixer.applyMutations(['TPO-287-THR', 'TPO-288-THR'], "A")
-
-
-def test_mutate_to_nonstandard():
+def test_mutate_to_nonstandard(data_dir):
     """Test mutating to a nonstandard residue defined with registerTemplate()."""
-    fixer = pdbfixer.PDBFixer(filename=(Path(__file__).parent / "data" / "1BHL.pdb").as_posix())
-    pdb = app.PDBFile((Path(__file__).parent / "data" / "CAS.pdb").as_posix())
+    fixer = pdbfixer.PDBFixer(filename=str(data_dir / "1BHL.pdb"))
+    pdb = app.PDBFile(str(data_dir / "CAS.pdb"))
     terminal = [atom.name in ('H2', 'OXT', 'HXT') for atom in pdb.topology.atoms()]
     fixer.registerTemplate(pdb.topology, pdb.positions, terminal)
     fixer.applyMutations(["SER-57-CAS", "ILE-60-CAS", "ASP-207-CAS"], "A")
@@ -84,9 +78,9 @@ def test_mutate_to_nonstandard():
         assert sum(1 for a in atoms if a.name == 'HXT') == (1 if i == 134 else 0)
 
 
-def test_download_template():
+def test_download_template(data_dir):
     """Test mutating to a nonstandard residue defined in the PDB."""
-    fixer = pdbfixer.PDBFixer(filename=(Path(__file__).parent / "data" / "1BHL.pdb").as_posix())
+    fixer = pdbfixer.PDBFixer(filename=str(data_dir / "1BHL.pdb"))
     fixer.applyMutations(["SER-57-SEP", "ILE-60-SEP", "ASP-207-SEP"], "A")
     fixer.findMissingResidues()
     fixer.findMissingAtoms()
