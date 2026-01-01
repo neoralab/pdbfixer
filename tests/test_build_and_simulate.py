@@ -1,7 +1,4 @@
 from __future__ import print_function
-
-import pytest
-
 from pdbfixer.pdbfixer import PDBFixer
 from openmm import app
 
@@ -32,7 +29,6 @@ class Watchdog(BaseException):
         raise self
 
 
-@pytest.mark.skipif(os.getenv("RUN_EXT_URL_TESTS") is None, reason="Cannot download during CI")
 def simulate(pdbcode, pdb_filename):
     from openmm import app
     import openmm.openmm as mm
@@ -89,7 +85,7 @@ def simulate(pdbcode, pdb_filename):
 
     return
 
-@pytest.mark.skipif(os.getenv("RUN_EXT_URL_TESTS") is None, reason="Cannot download during CI")
+
 def test_build_and_simulate():
     # DEBUG: These are tough PDB codes from http://www.umass.edu/microbio/chime/pe_beta/pe/protexpl/badpdbs.htm
     pdbcodes_to_build = ['1AS5', '1CBN', '1DPO', '1IGY', '1HAG', '1IAO', '4CPA', '1QCQ']
