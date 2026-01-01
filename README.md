@@ -35,3 +35,11 @@ conda install -c conda-forge pdbfixer
 ```
 
 Alternatively you can install from source, as described in the manual.
+
+## Publishing releases
+
+The GitHub Actions workflow publishes to PyPI when a tag is pushed. To create a release:
+
+1. Update the version in `pyproject.toml`.
+2. Tag the commit with the exact version (either `X.Y.Z` or `vX.Y.Z`).
+3. Push the tag to trigger the publish workflow.
