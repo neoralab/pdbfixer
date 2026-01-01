@@ -1,4 +1,10 @@
-[![PDBFixer Continuous Integration Workflow](https://github.com/openmm/pdbfixer/actions/workflows/CI.yml/badge.svg)](https://github.com/openmm/pdbfixer/actions/workflows/CI.yml)
+[![CI Status](https://github.com/openmm/pdbfixer/actions/workflows/CI.yml/badge.svg)](https://github.com/openmm/pdbfixer/actions/workflows/CI.yml)
+[![PyPI Version](https://img.shields.io/pypi/v/pdbfixer.svg)](https://pypi.org/project/pdbfixer/)
+[![Conda Forge](https://img.shields.io/conda/vn/conda-forge/pdbfixer.svg?logo=anaconda)](https://anaconda.org/conda-forge/pdbfixer)
+[![Python Versions](https://img.shields.io/pypi/pyversions/pdbfixer.svg)](https://pypi.org/project/pdbfixer/)
+[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![Documentation](https://img.shields.io/badge/docs-Manual-0d72bd.svg)](https://htmlpreview.github.io/?https://github.com/openmm/pdbfixer/blob/master/Manual.html)
+[![Authors](https://img.shields.io/badge/authors-OpenMM%20team-7c3aed.svg)](https://github.com/openmm/pdbfixer/graphs/contributors)
 
 PDBFixer
 ========
