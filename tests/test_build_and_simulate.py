@@ -1,5 +1,6 @@
 
 from __future__ import print_function
+import pytest
 from pdbfixer.pdbfixer import PDBFixer
 from openmm import app
 
@@ -84,6 +85,7 @@ def simulate(pdbcode, pdb_filename):
 
     return
 
+@pytest.mark.slow
 def test_build_and_simulate():
     # Keep the build list intentionally short to avoid excessive downloads and long runtimes in CI.
     # These structures are small and exercise the same pathway as the larger regression set used historically.

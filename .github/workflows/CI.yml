@@ -32,4 +32,9 @@ jobs:
           python -m pip install -e .[tests]
 
       - name: Run tests
-        run: pytest -vs tests
+        run: |
+          if [[ "${RUN_SLOW_TESTS}" == "1" ]]; then
+            pytest -vs tests
+          else
+            pytest -vs -m "not slow" tests
+          fi
