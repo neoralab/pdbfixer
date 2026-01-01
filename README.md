@@ -18,7 +18,17 @@ See our [manual](https://htmlpreview.github.io/?https://github.com/openmm/pdbfix
 
 ## Installation
 
-PDBFixer can be installed with conda or mamba.
+PDBFixer can be installed from PyPI using pip or uv (requires Python 3.13 or newer):
+
+```
+pip install pdbfixer
+```
+
+```
+uv pip install pdbfixer
+```
+
+Conda and mamba packages are also available:
 
 ```
 conda install -c conda-forge pdbfixer
