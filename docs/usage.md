@@ -46,4 +46,4 @@ The `PDBFile` writer supports gzip-compressed outputs if you provide a `.gz` fil
 - Automatically download a template from the Chemical Component Dictionary with `fixer.downloadTemplate("ABC")`. Downloads are cached per `PDBFixer` instance.
 
 ## Legacy manual
-A legacy single-page reference remains available as [`Manual.html`](../Manual.html) if you prefer a printable resource.
+A legacy single-page reference remains available in the upstream repository as [`Manual.html`](https://htmlpreview.github.io/?https://github.com/openmm/pdbfixer/blob/master/Manual.html) if you prefer a printable resource.
