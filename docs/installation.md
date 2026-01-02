@@ -38,10 +38,10 @@ pip install -e ".[tests]"
 ```
 
 ## Documentation dependencies
-To build or serve the MkDocs site locally, install the documentation requirements:
+To build or serve the MkDocs site locally, install the documentation extra defined in `pyproject.toml`:
 
 ```bash
-pip install -r requirements-docs.txt
+pip install -e ".[docs]"
 ```
 
 Then run `mkdocs serve` from the repository root and open the printed local URL.
