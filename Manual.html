@@ -1,111 +1,276 @@
-<html>
-    <head>
-        <title>PDBFixer Manual</title>
-    </head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PDBFixer Manual</title>
+    <style>
+        :root {
+            --accent: #2563eb;
+            --accent-soft: #e8f0fe;
+            --text: #1f2933;
+            --muted: #51606f;
+            --card: #ffffff;
+            --border: #e5e7eb;
+            --background: #f5f7fb;
+            --code-bg: #0b1724;
+            --code-text: #e8eef7;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+            background: radial-gradient(circle at 20% 20%, #f1f5ff 0, rgba(241, 245, 255, 0) 25%),
+                        radial-gradient(circle at 80% 0%, #ecfdf3 0, rgba(236, 253, 243, 0) 25%),
+                        var(--background);
+            color: var(--text);
+            line-height: 1.65;
+        }
+
+        .page {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 32px 20px 56px;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #0f172a, #1e3a8a);
+            color: #f8fafc;
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.24);
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 25% 20%, rgba(255, 255, 255, 0.1), transparent 40%),
+                        radial-gradient(circle at 70% 0%, rgba(255, 255, 255, 0.08), transparent 40%);
+        }
+
+        .hero h1 {
+            margin: 0 0 8px;
+            font-size: 36px;
+            letter-spacing: 0.4px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero .subtitle {
+            margin: 0 0 12px;
+            font-size: 17px;
+            color: #dce7ff;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero .meta {
+            margin: 0;
+            font-size: 14px;
+            color: #c4d5ff;
+            position: relative;
+            z-index: 1;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 24px;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+        }
+
+        .section {
+            margin-bottom: 16px;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #0f172a;
+            font-size: 24px;
+        }
+
+        h3 {
+            color: #0f172a;
+            margin-top: 12px;
+        }
+
+        p {
+            margin: 0 0 12px;
+            color: var(--muted);
+        }
+
+        ol, ul {
+            color: var(--muted);
+            padding-left: 20px;
+        }
+
+        .toc h3 {
+            margin-top: 0;
+        }
+
+        .toc ol {
+            list-style: decimal-leading-zero;
+            padding-left: 20px;
+            margin: 0;
+        }
+
+        .toc a {
+            color: var(--text);
+            text-decoration: none;
+        }
+
+        .toc a:hover {
+            color: var(--accent);
+        }
+
+        code, tt {
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            background: var(--accent-soft);
+            color: #0f172a;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+
+        pre {
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 14px 16px;
+            border-radius: 10px;
+            overflow-x: auto;
+            border: 1px solid #0f1a2b;
+            margin: 12px 0;
+        }
+
+        pre code {
+            background: transparent;
+            color: inherit;
+            padding: 0;
+        }
+
+        .callout {
+            background: #eff6ff;
+            border-left: 4px solid var(--accent);
+            padding: 12px 16px;
+            border-radius: 10px;
+            color: #102a43;
+            margin: 12px 0;
+        }
+
+        @media (min-width: 960px) {
+            .grid {
+                grid-template-columns: 280px 1fr;
+            }
+        }
+    </style>
+</head>
 <body>
-<h1 style="text-align:center">PDBFixer</h1>
-<div style="text-align:center">Copyright 2013-2025 by Peter Eastman and Stanford University</div>
+    <div class="page">
+        <header class="hero">
+            <h1>PDBFixer Manual</h1>
+            <p class="subtitle">Practical guidance for repairing PDB and PDBx/mmCIF structures using PDBFixer.</p>
+            <p class="meta">Copyright 2013-2025 by Peter Eastman and Stanford University</p>
+        </header>
 
-<h1>1. Introduction</h1>
+        <div class="grid">
+            <aside class="card toc">
+                <h3>Table of Contents</h3>
+                <ol>
+                    <li><a href="#introduction">Introduction</a></li>
+                    <li><a href="#installation">Installation</a></li>
+                    <li><a href="#desktop">PDBFixer as a Desktop Application</a></li>
+                    <li><a href="#cli">PDBFixer as a Command Line Application</a></li>
+                    <li><a href="#api">PDBFixer as a Python API</a></li>
+                </ol>
+            </aside>
 
-Protein Data Bank (PDB or PDBx/mmCIF) files often have a number of problems that must be fixed before they can be used in a molecular dynamics simulation.  The details vary depending on how the file was generated.  Here are some of the most common ones:
+            <main>
+                <section id="introduction" class="card section">
+                    <h2>1. Introduction</h2>
+                    <p>Protein Data Bank (PDB or PDBx/mmCIF) files often have a number of problems that must be fixed before they can be used in a molecular dynamics simulation. The details vary depending on how the file was generated. Here are some of the most common ones:</p>
+                    <ol>
+                        <li>If the structure was generated by X-ray crystallography, most or all of the hydrogen atoms will usually be missing.</li>
+                        <li>There may also be missing heavy atoms in flexible regions that could not be clearly resolved from the electron density. This may include anything from a few atoms at the end of a sidechain to entire loops.</li>
+                        <li>Many PDB files are also missing terminal atoms that should be present at the ends of chains.</li>
+                        <li>The file may include nonstandard residues that were added for crystallography purposes, but are not present in the naturally occurring molecule you want to simulate.</li>
+                        <li>The file may include more than what you want to simulate. For example, there may be salts, ligands, or other molecules that were added for experimental purposes. Or the crystallographic unit cell may contain multiple copies of a protein, but you only want to simulate a single copy.</li>
+                        <li>There may be multiple locations listed for some atoms.</li>
+                        <li>If you want to simulate the structure in explicit solvent, you will need to add a water box surrounding it.</li>
+                        <li>For membrane proteins, you may also need to add a lipid membrane.</li>
+                    </ol>
+                    <p>PDBFixer can fix all of these problems for you in a fully automated way. You simply select a file, tell it which problems to fix, and it does everything else.</p>
+                    <p>PDBFixer can be used in three different ways: as a desktop application with a graphical user interface; as a command line application; or as a Python API. This allows you to use it in whatever way best matches your own needs for flexibility, ease of use, and scriptability. The following sections describe how to use it in each of these ways.</p>
+                </section>
 
-<ol>
-    <li>If the structure was generated by X-ray crystallography, most or all of the hydrogen atoms will usually be missing.</li>
-    <li>There may also be missing heavy atoms in flexible regions that could not be clearly resolved from the electron density.  This may include anything from a few atoms at the end of a sidechain to entire loops.</li>
-    <li>Many PDB files are also missing terminal atoms that should be present at the ends of chains.</li>
-    <li>The file may include nonstandard residues that were added for crystallography purposes, but are not present in the naturally occurring molecule you want to simulate.</li>
-    <li>The file may include more than what you want to simulate.  For example, there may be salts, ligands, or other molecules that were added for experimental purposes.  Or the crystallographic unit cell may contain multiple copies of a protein, but you only want to simulate a single copy.</li>
-    <li>There may be multiple locations listed for some atoms.</li>
-    <li>If you want to simulate the structure in explicit solvent, you will need to add a water box surrounding it.</li>
-    <li>For membrane proteins, you may also need to add a lipid membrane.</li>
-</ol>
+                <section id="installation" class="card section">
+                    <h2>2. Installation</h2>
+                    <p>The easiest way to install PDBFixer is with conda or mamba.</p>
+                    <pre><code>conda install -c conda-forge pdbfixer</code></pre>
+                    <p>Alternatively you can install it from source. Download the repository, navigate to the root directory, and type:</p>
+                    <pre><code>python setup.py install</code></pre>
+                    <p>This will install the PDBFixer python package as well as the command line program <code>pdbfixer</code>.</p>
+                    <p>Before running PDBFixer, you must first install <a href="https://openmm.org">OpenMM</a>. Follow the installation instructions in the OpenMM manual. It is also recommended that you install CUDA or OpenCL, since the performance will usually be faster than when running on the CPU platform. PDBFixer requires that <a href="http://www.numpy.org">NumPy</a> be installed. All of these dependencies are included automatically when installing with conda.</p>
+                </section>
 
-PDBFixer can fix all of these problems for you in a fully automated way.  You simply select a file, tell it which problems to fix, and it does everything else.
-<p>
-PDBFixer can be used in three different ways: as a desktop application with a graphical user interface; as a command line application; or as a Python API.  This allows you to use it in whatever way best matches your own needs for flexibility, ease of use, and scriptability.  The following sections describe how to use it in each of these ways.
+                <section id="desktop" class="card section">
+                    <h2>3. PDBFixer as a Desktop Application</h2>
+                    <p>To run PDBFixer as a desktop application, type:</p>
+                    <pre><code>pdbfixer</code></pre>
+                    <p>on the command line. PDBFixer displays its user interface through a web browser, but it is still a single user desktop application. It should automatically launch a web browser and open a new window displaying the user interface. If for any reason this does not happen, you can launch a web browser yourself and point it to <a href="http://localhost:8000">http://localhost:8000</a>.</p>
+                    <p>The user interface consists of a series of pages for selecting a PDB or PDBx/mmCIF file and choosing what changes to make to it. Depending on the details of a particular file, some of these pages may be skipped.</p>
 
+                    <h3>Load File</h3>
+                    <p>On this page you select the PDB file to process. You can load a file from your local disk, or enter the identifier of a PDB structure to download from <a href="http://www.rcsb.org">RCSB</a>.</p>
 
-<h1>2. Installation</h2>
+                    <h3>Select Chains</h3>
+                    <p>This is the first place where you can choose to remove parts of the structure. It lists all chains contained in the file. If you want to remove some of them, just uncheck them before clicking "Continue".</p>
+                    <p>This page also gives options for removing heterogens. A heterogen is any residue other than a standard amino acid or nucleotide. The possible options are to keep all heterogens; keep only water while deleting all other heterogens; or delete all heterogens.</p>
 
-The easiest way to install PDBFixer is with conda or mamba.
-<p>
-<tt>conda install -c conda-forge pdbfixer</tt>
-</p>
-Alternatively you can install it from source.  Download the repository, navigate to the root directory, and type
-<p>
-<tt>python setup.py install</tt>
-<p>
-This will install the PDBFixer python package as well as the command line program <tt>pdbfixer</tt>.
+                    <h3>Add Residues</h3>
+                    <p>If the file has missing resides (based on the sequence given in the SEQRES records), this page will list them. Select which blocks of missing residues to add, then click "Continue".</p>
 
-<p>
-Before running PDBFixer, you must first install <a href="https://openmm.org">OpenMM</a>.  Follow the installation instructions in the OpenMM manual.  It is also recommended that you install CUDA or OpenCL, since the performance will usually be faster than when running on the CPU platform.  PDBFixer requires that <a href="http://www.numpy.org">NumPy</a> be installed.  All of these dependencies are included automatically when installing with conda.
+                    <h3>Convert Residues</h3>
+                    <p>If the file contains nonstandard residues, this page will allow you to replace them with standard ones. It suggests a reasonable replacement for each residue, but you can choose a different one if you prefer.</p>
 
+                    <h3>Add Heavy Atoms</h3>
+                    <p>This page lists all heavy atoms that are missing from the file. They will be added automatically.</p>
 
-<h1>3. PDBFixer as a Desktop Application</h1>
+                    <h3>Add Hydrogens, Water, and Membrane</h3>
+                    <p>This page gives you the chance to make other optional changes:</p>
+                    <ul>
+                        <li><strong>Add Missing Hydrogens</strong> If hydrogen atoms are missing from the file, PDBFixer can add them for you. Some residues can exist in multiple protonation states. To select which one to use, you can specify a pH, and the most common form of each residue at that pH will be used.</li>
+                        <li><strong>Add Water</strong> Add a water box surrounding the system. In addition to water, counterions will be added to neutalize the system. You also may choose to add more ions based on a desired total ionic strength. Select the ionic strength and the types of ions to use.</li>
+                        <li><strong>Add Membrane</strong> Add a lipid membrane. POPC and POPE lipids are supported.</li>
+                    </ul>
 
-To run PDBFixer as a desktop application, type
-<p>
-<tt>pdbfixer</tt>
-<p>
-on the command line.  PDBFixer displays its user interface through a web browser, but it is still a single user desktop application.  It should automatically launch a web browser and open a new window displaying the user interface.  If for any reason this does not happen, you can launch a web browser yourself and point it to <a href="http://localhost:8000">http://localhost:8000</a>.
-<p>
-The user interface consists of a series of pages for selecting a PDB or PDBx/mmCIF file and choosing what changes to make to it.  Depending on the details of a particular file, some of these pages may be skipped.
+                    <h3>Save File</h3>
+                    <p>You're all done! Click "Save File" to save the processed PDB file to disk. Then click "Process Another File" if you have more files to process, or "Quit" (in the top right corner of the page) if you are finished.</p>
+                </section>
 
-<h3>Load File</h3>
-
-On this page you select the PDB file to process.  You can load a file from your local disk, or enter the identifier of a PDB structure to download from <a href="http://www.rcsb.org">RCSB</a>.
-
-<h3>Select Chains</h3>
-
-This is the first place where you can choose to remove parts of the structure.  It lists all chains contained in the file.  If you want to remove some of them, just uncheck them before clicking "Continue".
-<p>
-This page also gives options for removing heterogens.  A heterogen is any residue other than a standard amino acid or nucleotide.  The possible options are to keep all heterogens; keep only water while deleting all other heterogens; or delete all heterogens.
-
-<h3>Add Residues</h3>
-
-If the file has missing resides (based on the sequence given in the SEQRES records), this page will list them.  Select which blocks of missing residues to add, then click "Continue".
-
-<h3>Convert Residues</h3>
-
-If the file contains nonstandard residues, this page will allow you to replace them with standard ones.  It suggests a reasonable replacement for each residue, but you can choose a different one if you prefer.
-
-<h3>Add Heavy Atoms</h3>
-
-This page lists all heavy atoms that are missing from the file.  They will be added automatically.
-
-<h3>Add Hydrogens, Water, and Membrane</h3>
-
-This page gives you the chance to make other optional changes:
-
-<ul>
-    <li><b>Add Missing Hydrogens</b> If hydrogen atoms are missing from the file, PDBFixer can add them for you.  Some residues can exist in multiple protonation states.  To select which one to use, you can specify a pH, and the most common form of each residue at that pH will be used.</li>
-    <li><b>Add Water</b> Add a water box surrounding the system.  In addition to water, counterions will be added to neutalize the system.  You also may choose to add more ions based on a desired total ionic strength.  Select the ionic strength and the types of ions to use.</li>
-    <li><b>Add Membrane</b> Add a lipid membrane.  POPC and POPE lipids are supported.</li>
-</ul>
-
-<h3>Save File</h3>
-
-You're all done!  Click "Save File" to save the processed PDB file to disk.  Then click "Process Another File" if you have more files to process, or "Quit" (in the top right corner of the page) if you are finished.
-
-<h1>4. PDBFixer as a Command Line Application</h1>
-
-PDBFixer provides a simple command line interface that is especially useful if you want to script it to process many files at once.  This interface is significantly less flexible than either the desktop interface or the Python API, but it is still powerful enough for many purposes.
-<p>
-To get usage instructions for the command line interface, type
-<p>
-<tt>pdbfixer --help</tt>
-<p>
-This displays the following information:
-<tt><pre>
-Usage: pdbfixer
-       pdbfixer filename [options]
-
-When run with no arguments, it launches the user interface.  If any arguments are specified, it runs in command line mode.
-
-Options:
-  -h, --help            show this help message and exit
-  --pdbid=PDBID         PDB id to retrieve from RCSB [default: None]
+                <section id="cli" class="card section">
+                    <h2>4. PDBFixer as a Command Line Application</h2>
+                    <p>PDBFixer provides a simple command line interface that is especially useful if you want to script it to process many files at once. This interface is significantly less flexible than either the desktop interface or the Python API, but it is still powerful enough for many purposes.</p>
+                    <p>To get usage instructions for the command line interface, type:</p>
+                    <pre><code>pdbfixer --help</code></pre>
+                    <div class="callout">
+                        <strong>Common options</strong> include <code>--pdbid</code> to download from RCSB, <code>--add-atoms</code> to control how missing atoms are handled, <code>--keep-heterogens</code> to select which heterogens are retained, and flags such as <code>--add-residues</code> or <code>--replace-nonstandard</code> to enable specific repair steps.
+                    </div>
+                    <pre><code>  --pdbid=PDBID         PDB id to retrieve from RCSB [default: None]
   --url=URL             URL to retrieve PDB from [default: None]
   --output=FILENAME     output pdb file [default: output.pdb]
   --add-atoms=ATOMS     which missing atoms to add: all, heavy, hydrogen, or
@@ -127,111 +292,74 @@ Options:
   --ionic-strength=STRENGTH
                         molar concentration of ions to add to the water box
                         [default: 0.0]
-  --verbose             Print verbose output
-</pre></tt>
-For example, consider the following command line:
-<p>
-<tt>pdbfixer --keep-heterogens=water --replace-nonstandard --water-box=4.0 4.0 3.0 myfile.pdb</tt>
-<p>
-This will load the file "myfile.pdb".  It will add any missing atoms to existing residues, but not add any missing residues (because we did not specify <tt>--add-residues</tt>).  Hydrogens will be added that are appropriate at pH 7.0 (the default).  If the file contains any nonstandard amino acids or nucleotides, they will be replaced with the closest equivalent standard ones.  Any water molecules present in the file will be kept, but all other heterogens will be deleted.  Finally a water box of size 4 by 4 by 3 nanometers will be added surrounding the structure.  If necessary, counterions will be added to neutralize it (Na+ or Cl-), but no other ions will be added (because we accepted the default ionic strength of 0.0).  After making all these changes, the result will be written to a file called "output.pdb".
+  --verbose             Print verbose output</code></pre>
+                    <p>For example, consider the following command line:</p>
+                    <pre><code>pdbfixer --keep-heterogens=water --replace-nonstandard --water-box=4.0 4.0 3.0 myfile.pdb</code></pre>
+                    <p>This will load the file "myfile.pdb". It will add any missing atoms to existing residues, but not add any missing residues (because we did not specify <code>--add-residues</code>). Hydrogens will be added that are appropriate at pH 7.0 (the default). If the file contains any nonstandard amino acids or nucleotides, they will be replaced with the closest equivalent standard ones. Any water molecules present in the file will be kept, but all other heterogens will be deleted. Finally a water box of size 4 by 4 by 3 nanometers will be added surrounding the structure. If necessary, counterions will be added to neutralize it (Na+ or Cl-), but no other ions will be added (because we accepted the default ionic strength of 0.0). After making all these changes, the result will be written to a file called "output.pdb".</p>
+                </section>
 
-<h1>5. PDBFixer as a Python API</h1>
-
-This is the most powerful way to use PDBFixer.  It allows you to script the processing of PDB files while maintaining precise programmatic control of every part of the process.
-<p>
-PDBFixer is based on OpenMM, and to use its Python API you should first be familiar with the OpenMM API.  Consult the OpenMM documentation for details.  In everything that follows, I will assume you are already familiar with OpenMM.
-<p>
-To use PDBFixer create a <tt>PDBFixer</tt> object, passing to its constructor the file to process.  You then call a series of methods on it to perform various transformations.  When all the transformations are done, you can get the new structure from its <tt>topology</tt> and <tt>positions</tt> fields.  The overall outline of your code will look something like this:
-<tt><pre>
-fixer = PDBFixer(filename='myfile.pdb')
+                <section id="api" class="card section">
+                    <h2>5. PDBFixer as a Python API</h2>
+                    <p>This is the most powerful way to use PDBFixer. It allows you to script the processing of PDB files while maintaining precise programmatic control of every part of the process.</p>
+                    <p>PDBFixer is based on OpenMM, and to use its Python API you should first be familiar with the OpenMM API. Consult the OpenMM documentation for details. In everything that follows, I will assume you are already familiar with OpenMM.</p>
+                    <p>To use PDBFixer create a <code>PDBFixer</code> object, passing to its constructor the file to process. You then call a series of methods on it to perform various transformations. When all the transformations are done, you can get the new structure from its <code>topology</code> and <code>positions</code> fields. The overall outline of your code will look something like this:</p>
+                    <pre><code>fixer = PDBFixer(filename='myfile.pdb')
 # ...
 # Call various methods on the PDBFixer
 # ...
-PDBFile.writeFile(fixer.topology, fixer.positions, open('output.pdb', 'w'))
-</pre></tt>
-There are many different methods you might call in the middle, depending on what you want to do.  These methods are described below.  Almost all of them are optional, but they <i>must</i> be called in <i>exactly</i> the order listed.  You may choose not to call some of the optional methods, but you may not call them out of order.
+PDBFile.writeFile(fixer.topology, fixer.positions, open('output.pdb', 'w'))</code></pre>
+                    <p>There are many different methods you might call in the middle, depending on what you want to do. These methods are described below. Almost all of them are optional, but they <em>must</em> be called in <em>exactly</em> the order listed. You may choose not to call some of the optional methods, but you may not call them out of order.</p>
 
-<h3>Remove Chains</h3>
+                    <h3>Remove Chains</h3>
+                    <p>To remove unwanted chains from the structure, call:</p>
+                    <pre><code>fixer.removeChains(indices)</code></pre>
+                    <p>where <code>indices</code> is a list of the indices of the chains to remove.</p>
 
-To remove unwanted chains from the structure, call
-<p>
-<tt>fixer.removeChains(indices)</tt>
-<p>
-where <tt>indices</tt> is a list of the indices of the chains to remove.
+                    <h3>Identify Missing Residues</h3>
+                    <p>To identify missing residues, call:</p>
+                    <pre><code>fixer.findMissingResidues()</code></pre>
+                    <p>This method identifies any residues in the SEQRES records for which no atom data is present. The residues are not actually added yet: it just stores the results into the <code>missingResidues</code> field. This is a dictionary. Each key is a tuple consisting of the index of a chain, and the residue index within that chain at which new residues should be inserted. The corresponding value is a list of the names of residues to insert there. After calling this method, you can modify the content of that dictionary to specify what residues should actually be inserted. For example, you can remove an entry to prevent that set of residues from being inserted, or change the identities of the residues to insert. If you do not want any residues at all to be added, you can just write:</p>
+                    <pre><code>fixer.missingResidues = {}</code></pre>
+                    <p>The residues actually get added when you call <code>addMissingAtoms()</code>, described below.</p>
 
-<h3>Identify Missing Residues</h3>
+                    <h3>Replace Nonstandard Residues</h3>
+                    <p>If you want to replace nonstandard residues with their standard versions, call:</p>
+                    <pre><code>fixer.findNonstandardResidues()
+fixer.replaceNonstandardResidues()</code></pre>
+                    <p><code>findNonstandardResidues()</code> stores the results into the <code>nonstandardResidues</code> field, which is a list. Each entry is a tuple whose first element is a <code>Residue</code> object and whose second element is the name of the suggested replacement residue. Before calling <code>replaceNonstandardResidues()</code> you can modify the contents of this list. For example, you can remove an entry to prevent a particular residue from being replaced, or you can change what it will be replaced with. You can even add new entries if you want to mutate other residues.</p>
 
-To identify missing residues, call
-<p>
-<tt>fixer.findMissingResidues()</tt>
-<p>
-This method identifies any residues in the SEQRES records for which no atom data is present.  The residues are not actually added yet: it just stores the results into the <tt>missingResidues</tt> field.  This is a dictionary.  Each key is a tuple consisting of the index of a chain, and the residue index within that chain at which new residues should be inserted.  The corresponding value is a list of the names of residues to insert there.  After calling this method, you can modify the content of that dictionary to specify what residues should actually be inserted.  For example, you can remove an entry to prevent that set of residues from being inserted, or change the identities of the residues to insert.  If you do not want any residues at all to be added, you can just write
-<p>
-<tt>fixer.missingResidues = {}</tt>
-<p>
-The residues actually get added when you call <tt>addMissingAtoms()</tt>, described below.
+                    <h3>Remove Heterogens</h3>
+                    <p>If you want to remove heterogens, call:</p>
+                    <pre><code>fixer.removeHeterogens(False)</code></pre>
+                    <p>The argument specifies whether to keep water molecules. <code>False</code> removes all heterogens including water. <code>True</code> keeps water molecules while removing all other heterogens.</p>
 
-<h3>Replace Nonstandard Residues</h3>
+                    <h3>Add Missing Heavy Atoms</h3>
+                    <p>To add missing heavy atoms, call:</p>
+                    <pre><code>fixer.findMissingAtoms()
+fixer.addMissingAtoms()</code></pre>
+                    <p><code>findMissingAtoms()</code> identifies all missing heavy atoms and stores them into two fields called <code>missingAtoms</code> and <code>missingTerminals</code>. Each of these is a dictionary whose keys are <code>Residue</code> objects and whose values are lists of atom names. <code>missingAtoms</code> contains standard atoms that should be present in any residue of that type, while <code>missingTerminals</code> contains missing terminal atoms that should be present at the start or end of a chain. You are free to remove atoms from these dictionaries before continuing, if you want to prevent certain atoms from being added.</p>
+                    <p><code>addMissingAtoms()</code> is the point at which all heavy atoms get added. This includes the ones identified by <code>findMissingAtoms()</code> as well as the missing residues identified by <code>findMissingResidues()</code>. Also, if you used <code>replaceNonstandardResidues()</code> to modify any residues, that will have removed any atoms that do not belong in the replacement residue, but it will <em>not</em> have added ones that are missing from the original residue. <code>addMissingAtoms()</code> is the point when those get added.</p>
 
-If you want to replace nonstandard residues with their standard versions, call
-<tt><pre>
-fixer.findNonstandardResidues()
-fixer.replaceNonstandardResidues()
-</pre></tt>
-<tt>findNonstandardResidues()</tt> stores the results into the <tt>nonstandardResidues</tt> field, which is a list.  Each entry is a tuple whose first element is a <tt>Residue</tt> object and whose second element is the name of the suggested replacement residue.  Before calling <tt>replaceNonstandardResidues()</tt> you can modify the contents of this list.  For example, you can remove an entry to prevent a particular residue from being replaced, or you can change what it will be replaced with.  You can even add new entries if you want to mutate other residues.
+                    <h3>Add Missing Hydrogens</h3>
+                    <p>If you want to add missing hydrogen atoms, call:</p>
+                    <pre><code>fixer.addMissingHydrogens(7.0)</code></pre>
+                    <p>The argument is the pH based on which to select protonation states.</p>
 
-<h3>Remove Heterogens</h3>
+                    <h3>Add Water</h3>
+                    <p>If you want to add a water box, call <code>addSolvent()</code>. This method has several optional arguments. Its full definition is:</p>
+                    <pre><code>addSolvent(self, boxSize, positiveIon='Na+', negativeIon='Cl-', ionicStrength=0*molar)</code></pre>
+                    <p><code>boxSize</code> is a <code>Vec3</code> object specifying the dimensions of the water box to add. The other options specify the types of ions to add and the desired ionic strength. Allowed values for <code>positiveIon</code> are Cs+, K+, Li+, Na+, and Rb+. Allowed values for <code>negativeIon</code> are Cl-, Br-, F-, and I-. For example, the following line builds a 5 nm cube of 0.1 molar potassium chloride:</p>
+                    <pre><code>fixer.addSolvent(Vec3(5, 5, 5)*nanometer, positiveIon='K+', ionicStrength=0.1*molar)</code></pre>
 
-If you want to remove heterogens, call
-<p>
-<tt>fixer.removeHeterogens(False)</tt>
-<p>
-The argument specifies whether to keep water molecules.  <tt>False</tt> removes all heterogens including water.  <tt>True</tt> keeps water molecules while removing all other heterogens.
+                    <h3>Add Membrane</h3>
+                    <p>If you want to add a lipid membrane, call <code>addMembrane()</code>. This method also adds water, so you should not also call <code>addSolvent()</code> when using it. There are several optional arguments. The full definition is:</p>
+                    <pre><code>addMembrane(self, lipidType='POPC', membraneCenterZ=0*nanometer, minimumPadding=1*nanometer, positiveIon='Na+', negativeIon='Cl-', ionicStrength=0*molar)</code></pre>
+                    <p><code>lipidType</code> should be either <code>'POPC'</code> or <code>'POPE'</code>. <code>membraneCenterZ</code> is the position along the Z axis at which the center of the membrane will be located. <code>minimumPadding</code> is the minimum acceptable distance between the protein and the edges of the periodic box. All other arguments are the same as for <code>addSolvent()</code>. For example, the following line adds a POPE membrane centered at Z=0 with at least 1 nm of padding on all sides:</p>
+                    <pre><code>fixer.addMembrane('POPE')</code></pre>
 
-<h3>Add Missing Heavy Atoms</h3>
-
-To add missing heavy atoms, call
-<tt><pre>
-fixer.findMissingAtoms()
-fixer.addMissingAtoms()
-</pre></tt>
-<tt>findMissingAtoms()</tt> identifies all missing heavy atoms and stores them into two fields called <tt>missingAtoms</tt> and <tt>missingTerminals</tt>.  Each of these is a dictionary whose keys are <tt>Residue</tt> objects and whose values are lists of atom names.  <tt>missingAtoms</tt> contains standard atoms that should be present in any residue of that type, while <tt>missingTerminals</tt> contains missing terminal atoms that should be present at the start or end of a chain.  You are free to remove atoms from these dictionaries before continuing, if you want to prevent certain atoms from being added.
-<p>
-<tt>addMissingAtoms()</tt> is the point at which all heavy atoms get added.  This includes the ones identified by <tt>findMissingAtoms()</tt> as well as the missing residues identified by <tt>findMissingResidues()</tt>.  Also, if you used <tt>replaceNonstandardResidues()</tt> to modify any residues, that will have removed any atoms that do not belong in the replacement residue, but it will <i>not</i> have added ones that are missing from the original residue.  <tt>addMissingAtoms()</tt> is the point when those get added.
-
-<h3>Add Missing Hydrogens</h3>
-
-If you want to add missing hydrogen atoms, call
-<p>
-<tt>fixer.addMissingHydrogens(7.0)</tt>
-<p>
-The argument is the pH based on which to select protonation states.
-
-<h3>Add Water</h3>
-
-If you want to add a water box, call <tt>addSolvent()</tt>.  This method has several optional arguments.  Its full definition is
-<p>
-<tt>addSolvent(self, boxSize, positiveIon='Na+', negativeIon='Cl-', ionicStrength=0*molar)</tt>
-<p>
-<tt>boxSize</tt> is a <tt>Vec3</tt> object specifying the dimensions of the water box to add.  The other options specify the types of ions to add and the desired ionic strength.  Allowed values for <tt>positiveIon</tt> are Cs+, K+, Li+, Na+, and Rb+.  Allowed values for <tt>negativeIon</tt> are Cl-, Br-, F-, and I-.  For example, the following line builds a 5 nm cube of 0.1 molar potassium chloride:
-<p>
-<tt>fixer.addSolvent(Vec3(5, 5, 5)*nanometer, positiveIon='K+', ionicStrength=0.1*molar)</tt>
-
-<h3>Add Membrane</h3>
-
-If you want to add a lipid membrane, call <tt>addMembrane()</tt>.  This method also adds water, so you should not also call <tt>addSolvent()</tt> when using it.  There are several optional arguments.  The full definition is
-<p>
-<tt>addMembrane(self, lipidType='POPC', membraneCenterZ=0*nanometer, minimumPadding=1*nanometer, positiveIon='Na+', negativeIon='Cl-', ionicStrength=0*molar)</tt>
-<p>
-<tt>lipidType</tt> should be either <tt>'POPC'</tt> or <tt>'POPE'</tt>.  <tt>membraneCenterZ</tt> is the position along the Z axis at which the center of the membrane will be located.  <tt>minimumPadding</tt> is the minimum acceptable distance between the protein and the edges of the periodic box.  All other arguments are the same as for <tt>addSolvent()</tt>.  For example, the following line adds a POPE membrane centered at Z=0 with at least 1 nm of padding on all sides:
-<p>
-<tt>fixer.addMembrane('POPE')</tt>
-
-<h3>Examples</h3>
-
-Here is a complete example that ties this together.  It adds all missing atoms including heavy atoms, missing residues, and hydrogens.  It replaces all nonstandard residues by their standard equivalents then deletes all remaining heterogens except water.  Finally, it fills in all gaps with water; that is, it adds a water box whose dimensions match the crystallographic unit cell.  It saves the result to a file called output.pdb.
-<tt><pre>
-from pdbfixer import PDBFixer
+                    <h3>Examples</h3>
+                    <p>Here is a complete example that ties this together. It adds all missing atoms including heavy atoms, missing residues, and hydrogens. It replaces all nonstandard residues by their standard equivalents then deletes all remaining heterogens except water. Finally, it fills in all gaps with water; that is, it adds a water box whose dimensions match the crystallographic unit cell. It saves the result to a file called output.pdb.</p>
+                    <pre><code>from pdbfixer import PDBFixer
 from openmm.app import PDBFile
 fixer = PDBFixer(filename='myfile.pdb')
 fixer.findMissingResidues()
@@ -242,73 +370,52 @@ fixer.findMissingAtoms()
 fixer.addMissingAtoms()
 fixer.addMissingHydrogens(7.0)
 fixer.addSolvent(fixer.topology.getUnitCellDimensions())
-PDBFile.writeFile(fixer.topology, fixer.positions, open('output.pdb', 'w'))
-</pre></tt>
+PDBFile.writeFile(fixer.topology, fixer.positions, open('output.pdb', 'w'))</code></pre>
 
-Suppose you want to keep only the first chain in the file and remove all the others.  To do this, call <tt>removeChains()</tt>:
-<tt><pre>
-<span style="color:grey">fixer = PDBFixer(filename='myfile.pdb')</span>
+                    <p>Suppose you want to keep only the first chain in the file and remove all the others. To do this, call <code>removeChains()</code>:</p>
+                    <pre><code>fixer = PDBFixer(filename='myfile.pdb')
 numChains = len(list(fixer.topology.chains()))
 fixer.removeChains(range(1, numChains))
-<span style="color:grey">fixer.findMissingResidues()</span>
-</pre></tt>
+fixer.findMissingResidues()</code></pre>
 
-Suppose you only want to add missing residues in the <i>middle</i> of a chain, not ones at the start or end of the chain.  This can be done by modifying the <tt>missingResidues</tt> field immediately after calling <tt>findMissingResidues()</tt>:
-<tt><pre>
-<span style="color:grey">fixer.findMissingResidues()</span>
+                    <p>Suppose you only want to add missing residues in the <em>middle</em> of a chain, not ones at the start or end of the chain. This can be done by modifying the <code>missingResidues</code> field immediately after calling <code>findMissingResidues()</code>:</p>
+                    <pre><code>fixer.findMissingResidues()
 chains = list(fixer.topology.chains())
 keys = fixer.missingResidues.keys()
 for key in keys:
     chain = chains[key[0]]
     if key[1] == 0 or key[1] == len(list(chain.residues())):
         del fixer.missingResidues[key]
-<span style="color:grey">fixer.findNonstandardResidues()</span>
-</pre></tt>
+fixer.findNonstandardResidues()</code></pre>
 
-Suppose that instead of matching the size of the crystallographic unit cell, you want to add a cubic water box large enough to hold the entire system.  That is, you want to compute the range of atom positions along each axis, then set the size of the water box to match the largest axis.  This can be done as follows:
-<tt><pre>
-<span style="color:grey">fixer.addMissingHydrogens(7.0)</span>
+                    <p>Suppose that instead of matching the size of the crystallographic unit cell, you want to add a cubic water box large enough to hold the entire system. That is, you want to compute the range of atom positions along each axis, then set the size of the water box to match the largest axis. This can be done as follows:</p>
+                    <pre><code>fixer.addMissingHydrogens(7.0)
 maxSize = max(max((pos[i] for pos in fixer.positions))-min((pos[i] for pos in fixer.positions)) for i in range(3))
 boxSize = maxSize*Vec3(1, 1, 1)
 fixer.addSolvent(boxSize)
-<span style="color:grey">PDBFile.writeFile(fixer.topology, fixer.positions, open('output.pdb', 'w'))</span>
-</pre></tt>
+PDBFile.writeFile(fixer.topology, fixer.positions, open('output.pdb', 'w'))</code></pre>
 
-Suppose you want to replace all nonstandard residues by alanine.  <tt>findNonstandardResidues()</tt> selects a suggested replacement for each residue, but you can modify that before calling <tt>replaceNonstandardResidues()</tt>:
-<tt><pre>
-<span style="color:grey">fixer.findNonstandardResidues()</span>
+                    <p>Suppose you want to replace all nonstandard residues by alanine. <code>findNonstandardResidues()</code> selects a suggested replacement for each residue, but you can modify that before calling <code>replaceNonstandardResidues()</code>:</p>
+                    <pre><code>fixer.findNonstandardResidues()
 fixer.nonstandardResidues = [(residue, 'ALA') for residue, replacement in fixer.nonstandardResidues]
-<span style="color:grey">fixer.replaceNonstandardResidues()</span>
-</pre></tt>
+fixer.replaceNonstandardResidues()</code></pre>
 
-<h3>Nonstandard Residues</h3>
-
-PDBFixer knows how to build all the standard amino acids and nucleotides.  If you want to apply it to other residues, you need to tell it how.  This is done by defining templates.
-
-A template is a description of a residue: what atoms it contains, how they are bonded to each other, and what conformation they take on.  For residues defined in the PDB Chemical Component Dictionary, you can simply tell PDBFixer to download the definition of whatever residue you need.  For example, if you want to model a protein containing a selenocysteine (PDB code SEC), call
-
-<tt><pre>
-fixer.downloadTemplate('SEC')
-</pre></tt>
-
-Now you can call other methods such as <tt>findMissingAtoms()</tt>, <tt>addMissingAtoms()</tt>, and <tt>addMissingHydrogens()</tt> in the usual way.  PDBFixer will fix problems in the SEC residue exactly as it does for standard ones.
-<p/>
-If your structure contains molecules or residues that are not present in the PDB Chemical Component Dictionary, you can still add templates for them, but you need to define them yourself.  This is done by calling <tt>registerTemplate()</tt>.  It takes two required arguments: an OpenMM Topology object describing the structure of the residue, and a list of positions describing a typical conformation of the residue.  These can be easily obtained from, for example, a PDB or PDBx/mmCIF file containing just the single residue.
-
-<tt><pre>
-pdbx = PDBxFile('MOL.cif')
-fixer.registerTemplate(pdbx.topology, pdbx.positions)
-</pre></tt>
-
-For residues that appear as part of larger molecules rather than in isolation, you need to provide one more piece of information: which atoms should only be present in terminal residues.  For example, a C-terminal amino acid is capped with OXT and HXT atoms, but these atoms are omitted when the residue appears in the middle of a chain and is bonded to another residue.  Likewise, the nitrogen in an N-terminal amino acid has two hydrogens attached to it (H and H2), but when it appears in the middle of a chain and the nitrogen is bonded to another residue, the H2 hydrogen is omitted.  You can pass a third argument containing a list of boolean flags for each atom, specifying which ones should be omitted from non-terminal residues.
-
-<tt><pre>
-pdbx = PDBxFile('RES.cif')
+                    <h3>Nonstandard Residues</h3>
+                    <p>PDBFixer knows how to build all the standard amino acids and nucleotides. If you want to apply it to other residues, you need to tell it how. This is done by defining templates.</p>
+                    <p>A template is a description of a residue: what atoms it contains, how they are bonded to each other, and what conformation they take on. For residues defined in the PDB Chemical Component Dictionary, you can simply tell PDBFixer to download the definition of whatever residue you need. For example, if you want to model a protein containing a selenocysteine (PDB code SEC), call:</p>
+                    <pre><code>fixer.downloadTemplate('SEC')</code></pre>
+                    <p>Now you can call other methods such as <code>findMissingAtoms()</code>, <code>addMissingAtoms()</code>, and <code>addMissingHydrogens()</code> in the usual way. PDBFixer will fix problems in the SEC residue exactly as it does for standard ones.</p>
+                    <p>If your structure contains molecules or residues that are not present in the PDB Chemical Component Dictionary, you can still add templates for them, but you need to define them yourself. This is done by calling <code>registerTemplate()</code>. It takes two required arguments: an OpenMM Topology object describing the structure of the residue, and a list of positions describing a typical conformation of the residue. These can be easily obtained from, for example, a PDB or PDBx/mmCIF file containing just the single residue.</p>
+                    <pre><code>pdbx = PDBxFile('MOL.cif')
+fixer.registerTemplate(pdbx.topology, pdbx.positions)</code></pre>
+                    <p>For residues that appear as part of larger molecules rather than in isolation, you need to provide one more piece of information: which atoms should only be present in terminal residues. For example, a C-terminal amino acid is capped with OXT and HXT atoms, but these atoms are omitted when the residue appears in the middle of a chain and is bonded to another residue. Likewise, the nitrogen in an N-terminal amino acid has two hydrogens attached to it (H and H2), but when it appears in the middle of a chain and the nitrogen is bonded to another residue, the H2 hydrogen is omitted. You can pass a third argument containing a list of boolean flags for each atom, specifying which ones should be omitted from non-terminal residues.</p>
+                    <pre><code>pdbx = PDBxFile('RES.cif')
 terminal = [atom.name in ('H2', 'OXT', 'HXT') for atom in pdbx.topology.atoms()]
-fixer.registerTemplate(pdbx.topology, pdbx.positions, terminal)
-</pre></tt>
-
-Strictly speaking, it is the bonds that matter, not the position in the chain.  For example, the sulfur in a CYS residue has a hydrogen that must be omitted when it forms a disulfide bond to another residue.  What matters is whether the sulfur has a bond connecting it to another residue, not the position of the CYS residue in its chain.
-
+fixer.registerTemplate(pdbx.topology, pdbx.positions, terminal)</code></pre>
+                    <p>Strictly speaking, it is the bonds that matter, not the position in the chain. For example, the sulfur in a CYS residue has a hydrogen that must be omitted when it forms a disulfide bond to another residue. What matters is whether the sulfur has a bond connecting it to another residue, not the position of the CYS residue in its chain.</p>
+                </section>
+            </main>
+        </div>
+    </div>
 </body>
 </html>
