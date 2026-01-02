@@ -4,6 +4,7 @@
 [![Python Versions](https://img.shields.io/pypi/pyversions/pdbfixer.svg)](https://pypi.org/project/pdbfixer/)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Documentation](https://img.shields.io/badge/docs-Manual-0d72bd.svg)](https://htmlpreview.github.io/?https://github.com/openmm/pdbfixer/blob/master/Manual.html)
+[![Authors](https://img.shields.io/badge/authors-neoralab%20team-7c3aed.svg)](https://github.com/neoralab/pdbfixer/graphs/contributors)
 [![Authors](https://img.shields.io/badge/authors-OpenMM%20team-7c3aed.svg)](https://github.com/openmm/pdbfixer/graphs/contributors)
 
 PDBFixer

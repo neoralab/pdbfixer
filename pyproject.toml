@@ -64,4 +64,10 @@ markers = [
 ]
 
 [tool.versioningit]
-default-version = "0+unknown"
+default-version = "0.1.0"
+[tool.versioningit.write]
+file = "src/pdbfixer/version.py"
+[tool.versioningit.format]
+distance = "{base_version}"
+dirty = "{base_version}"
+distance-dirty = "{base_version}"
