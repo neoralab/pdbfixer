@@ -9,7 +9,9 @@
   <a href="https://pypistats.org/packages/pdbfixer-neoralab"><img src="https://img.shields.io/pypi/dm/pdbfixer-neoralab.svg" alt="PyPI Downloads"></a>
   <a href="https://pypi.org/project/pdbfixer-neoralab/"><img src="https://img.shields.io/badge/Python-%3E%3D3.11-3776AB?logo=python&logoColor=white" alt="Python Versions"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue.svg" alt="License: Apache-2.0"></a>
-  <a href="https://htmlpreview.github.io/?https://github.com/openmm/pdbfixer/blob/master/Manual.html"><img src="https://img.shields.io/badge/docs-Manual-0d72bd.svg" alt="Documentation"></a>
+  <a href="https://neoralab.github.io/pdbfixer/"><img src="https://img.shields.io/badge/docs-site-0d72bd.svg" alt="MkDocs Site"></a>
+  <a href="https://github.com/neoralab/pdbfixer/actions/workflows/docs.yml"><img src="https://img.shields.io/github/actions/workflow/status/neoralab/pdbfixer/docs.yml?branch=main&label=docs" alt="Docs Status"></a>
+  <a href="https://htmlpreview.github.io/?https://github.com/openmm/pdbfixer/blob/master/Manual.html"><img src="https://img.shields.io/badge/docs-Manual-0d72bd.svg" alt="Legacy Manual"></a>
   <a href="https://github.com/neoralab/pdbfixer/graphs/contributors"><img src="https://img.shields.io/badge/authors-neoralab%20team-7c3aed.svg" alt="neoralab Authors"></a>
   <a href="https://github.com/openmm/pdbfixer/graphs/contributors"><img src="https://img.shields.io/badge/authors-OpenMM%20team-7c3aed.svg" alt="OpenMM Authors"></a>
 </p>
@@ -17,6 +19,8 @@
 # PDBFixer
 
 PDBFixer is a Python library for repairing and preparing Protein Data Bank (PDB) files before simulation. It focuses on an intuitive API that automates common cleanup steps so structures are ready for downstream workflows without manual editing.
+
+This Neoralab-maintained fork builds on the original OpenMM release, extending the codebase with modern packaging, documentation, and interface updates reflected in the refreshed manual.
 
 ## Overview
 
@@ -29,7 +33,13 @@ PDBFixer can automatically:
 - Remove unwanted chains or heterogens.
 - Build a water box for explicit solvent simulations.
 
-Consult the [manual](https://htmlpreview.github.io/?https://github.com/openmm/pdbfixer/blob/master/Manual.html) for full usage guidance.
+Consult the responsive [manual](Manual.html) for full usage guidance. If browsing online, use the GitHub-hosted preview at [htmlpreview.github.io](https://htmlpreview.github.io/?https://github.com/openmm/pdbfixer/blob/master/Manual.html).
+
+## Documentation
+
+- Hosted docs: https://neoralab.github.io/pdbfixer/
+- Source: [`docs/`](docs/)
+- Legacy single-page manual: [`Manual.html`](Manual.html)
 
 ## Improvements over the OpenMM fork
 
@@ -74,11 +84,17 @@ PDBFixer is distributed purely as a Python API. Use it directly from your code:
 
 ```python
 from pdbfixer import PDBFixer
+from openmm.app import PDBFile
 
 fixer = PDBFixer(filename="input.pdb")
 fixer.findMissingResidues()
 fixer.findMissingAtoms()
 fixer.addMissingAtoms()
 fixer.addMissingHydrogens(pH=7.0)
+
+with open("fixed.pdb", "w") as handle:
+    PDBFile.writeFile(fixer.topology, fixer.positions, handle)
 ```
+
+For more examples—mutations, solvation, and template registration—see the [MkDocs site](https://neoralab.github.io/pdbfixer/) or the source files under [`docs/`](docs/).
 
