@@ -18,9 +18,12 @@
 
 # PDBFixer
 
-PDBFixer is a Python library for repairing and preparing Protein Data Bank (PDB) files before simulation. It focuses on an intuitive API that automates common cleanup steps so structures are ready for downstream workflows without manual editing.
+PDBFixer is a Python library for repairing and preparing Protein Data Bank (PDB) files before simulation. It focuses on
+an intuitive API that automates common cleanup steps so structures are ready for downstream workflows without manual
+editing.
 
-This Neoralab-maintained fork builds on the original OpenMM release, extending the codebase with modern packaging, documentation, and interface updates reflected in the refreshed manual.
+This Neoralab-maintained fork builds on the original OpenMM release, extending the codebase with modern packaging,
+documentation, and interface updates reflected in the refreshed manual.
 
 ## Overview
 
@@ -33,23 +36,25 @@ PDBFixer can automatically:
 - Remove unwanted chains or heterogens.
 - Build a water box for explicit solvent simulations.
 
-Consult the responsive [manual](Manual.html) for full usage guidance. If browsing online, use the GitHub-hosted preview at [htmlpreview.github.io](https://htmlpreview.github.io/?https://github.com/openmm/pdbfixer/blob/master/Manual.html).
+Consult the responsive [manual](Manual.html) for full usage guidance. If browsing online, use the GitHub-hosted preview
+at [htmlpreview.github.io](https://htmlpreview.github.io/?https://github.com/openmm/pdbfixer/blob/master/Manual.html).
 
 ## Documentation
 
 - Hosted docs: https://neoralab.github.io/pdbfixer/
 - Source: [`docs/`](docs/)
-- Legacy single-page manual: [`Manual.html`](Manual.html)
 
 ## Improvements over the OpenMM fork
 
-- Published on PyPI as [`pdbfixer-neoralab`](https://pypi.org/project/pdbfixer-neoralab/) with support for Python 3.11 and newer.
+- Published on PyPI as [`pdbfixer-neoralab`](https://pypi.org/project/pdbfixer-neoralab/) with support for Python 3.11
+  and newer.
 - Modernized packaging via `pyproject.toml` and `versioningit`, keeping releases in sync with Git tags.
 - Distributed purely as a Python API, removing the legacy web and command-line interfaces to focus on library usability.
 
 ## Installation
 
 ### PyPI or uv
+
 Install with pip or uv (Python 3.11+):
 
 ```bash
@@ -61,6 +66,7 @@ uv pip install pdbfixer-neoralab
 ```
 
 ### Conda
+
 Install from conda-forge:
 
 ```bash
@@ -68,11 +74,15 @@ conda install -c conda-forge pdbfixer
 ```
 
 ### From source
+
 Clone the repository and follow the manual for source installation details.
 
 ## Versioning
 
-PDBFixer uses [versioningit](https://versioningit.readthedocs.io/) to derive its version from Git tags. Building from a source checkout therefore requires either a cloned repository with Git metadata or a source distribution that already includes the generated version. When no tag information is available, the default reported version is `0+unknown`. To preview the build version:
+PDBFixer uses [versioningit](https://versioningit.readthedocs.io/) to derive its version from Git tags. Building from a
+source checkout therefore requires either a cloned repository with Git metadata or a source distribution that already
+includes the generated version. When no tag information is available, the default reported version is `0+unknown`. To
+preview the build version:
 
 ```bash
 python -m versioningit
@@ -96,5 +106,6 @@ with open("fixed.pdb", "w") as handle:
     PDBFile.writeFile(fixer.topology, fixer.positions, handle)
 ```
 
-For more examples—mutations, solvation, and template registration—see the [MkDocs site](https://neoralab.github.io/pdbfixer/) or the source files under [`docs/`](docs/).
+For more examples—mutations, solvation, and template registration—see
+the [MkDocs site](https://neoralab.github.io/pdbfixer/) or the source files under [`docs/`](docs/).
 
