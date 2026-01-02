@@ -6,6 +6,8 @@ repo_name: neoralab/pdbfixer
 docs_dir: docs
 theme:
   name: material
+  palette:
+    scheme: slate
   features:
     - navigation.tabs
     - navigation.sections
