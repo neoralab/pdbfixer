@@ -7,7 +7,7 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "pdbfixer"
+name = "pdbfixer-neoralab"
 dynamic = ["version"]
 description = "Fixes problems in PDB files"
 readme = "README.md"
