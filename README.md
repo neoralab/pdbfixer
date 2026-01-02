@@ -26,7 +26,7 @@ documentation, and interface updates reflected in the refreshed docs site.
 This repository is a fork of [openmm/pdbfixer](https://github.com/openmm/pdbfixer).
 The upstream project is available under the MIT License, and its original copyrights and notices are preserved in this
 fork.
-This fork contains additional modifications maintained by Fabio Bove and contributors.
+This fork contains additional modifications maintained by neoralab and contributors.
 
 ## Overview
 
