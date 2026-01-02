@@ -6,7 +6,7 @@
   <a href="https://github.com/openmm/pdbfixer/actions/workflows/CI.yml"><img src="https://github.com/openmm/pdbfixer/actions/workflows/CI.yml/badge.svg" alt="CI Status"></a>
   <a href="https://pypi.org/project/pdbfixer-neoralab/"><img src="https://img.shields.io/pypi/v/pdbfixer-neoralab.svg" alt="PyPI Version"></a>
   <a href="https://pypi.org/project/pdbfixer-neoralab/"><img src="https://img.shields.io/badge/Python-%3E%3D3.11-3776AB?logo=python&logoColor=white" alt="Python Versions"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue.svg" alt="License: Apache-2.0"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
   <a href="https://neoralab.github.io/pdbfixer/"><img src="https://img.shields.io/badge/docs-site-0d72bd.svg" alt="MkDocs Site"></a>
   <a href="https://github.com/neoralab/pdbfixer/graphs/contributors"><img src="https://img.shields.io/badge/authors-neoralab%20team-7c3aed.svg" alt="neoralab Authors"></a>
   <a href="https://github.com/openmm/pdbfixer/graphs/contributors"><img src="https://img.shields.io/badge/authors-OpenMM%20team-7c3aed.svg" alt="OpenMM Authors"></a>
@@ -20,6 +20,13 @@ editing.
 
 This Neoralab-maintained fork builds on the original OpenMM release, extending the codebase with modern packaging,
 documentation, and interface updates reflected in the refreshed docs site.
+
+## Fork notice
+
+This repository is a fork of [openmm/pdbfixer](https://github.com/openmm/pdbfixer).
+The upstream project is available under the MIT License, and its original copyrights and notices are preserved in this
+fork.
+This fork contains additional modifications maintained by Fabio Bove and contributors.
 
 ## Overview
 

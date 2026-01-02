@@ -28,4 +28,4 @@ mkdocs build  # validate build
 ## Pull requests
 - Keep changes narrowly scoped and avoid refactoring production code unless necessary for documentation accuracy.
 - Update or add examples when API-facing changes are made.
-- Ensure new files carry the Apache 2.0 license header where appropriate.
+- Ensure new files carry the MIT license header or are clearly covered by the repository LICENSE.
