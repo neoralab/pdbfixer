@@ -4,6 +4,7 @@
 [![Python Versions](https://img.shields.io/pypi/pyversions/pdbfixer.svg)](https://pypi.org/project/pdbfixer/)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Documentation](https://img.shields.io/badge/docs-Manual-0d72bd.svg)](https://htmlpreview.github.io/?https://github.com/openmm/pdbfixer/blob/master/Manual.html)
+[![Authors](https://img.shields.io/badge/authors-neoralab%20team-7c3aed.svg)](https://github.com/neoralab/pdbfixer/graphs/contributors)
 [![Authors](https://img.shields.io/badge/authors-OpenMM%20team-7c3aed.svg)](https://github.com/openmm/pdbfixer/graphs/contributors)
 
 PDBFixer
@@ -41,6 +42,19 @@ conda install -c conda-forge pdbfixer
 ```
 
 Alternatively you can install from source, as described in the manual.
+
+### Versioning
+
+PDBFixer uses [versioningit](https://versioningit.readthedocs.io/) to derive
+its version from Git tags. Building from a source checkout therefore requires
+either a cloned repository with Git metadata or a source distribution that
+already includes the generated version. When no tag information is available,
+the default version reported is `0+unknown`. To see the version that will be
+used for a build, run:
+
+```
+python -m versioningit
+```
 
 ## Usage
 
