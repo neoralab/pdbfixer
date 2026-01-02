@@ -32,7 +32,7 @@ with open("fixed.pdb", "w") as handle:
 If you want to browse the refreshed manual locally:
 
 ```bash
-pip install -r requirements-docs.txt
+pip install -e ".[docs]"
 mkdocs serve
 ```
 

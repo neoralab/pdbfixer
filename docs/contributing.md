@@ -20,7 +20,7 @@ Use `pytest -m "not slow"` to skip slow or network-heavy tests.
 
 ## Documentation
 ```bash
-pip install -r requirements-docs.txt
+pip install -e ".[docs]"
 mkdocs serve  # live preview
 mkdocs build  # validate build
 ```
