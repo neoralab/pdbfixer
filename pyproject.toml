@@ -64,4 +64,4 @@ markers = [
 ]
 
 [tool.versioningit]
-fallback-version = "0+unknown"
+default-version = "0+unknown"

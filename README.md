@@ -47,8 +47,9 @@ Alternatively you can install from source, as described in the manual.
 PDBFixer uses [versioningit](https://versioningit.readthedocs.io/) to derive
 its version from Git tags. Building from a source checkout therefore requires
 either a cloned repository with Git metadata or a source distribution that
-already includes the generated version. To see the version that will be used
-for a build, run:
+already includes the generated version. When no tag information is available,
+the default version reported is `0+unknown`. To see the version that will be
+used for a build, run:
 
 ```
 python -m versioningit
