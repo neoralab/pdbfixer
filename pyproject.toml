@@ -19,6 +19,7 @@ license = { file = "LICENSE" }
 requires-python = ">=3.11"
 dependencies = [
   "numpy",
+  "pydantic>=2",
   "openmm >= 8.2",
 ]
 classifiers = [

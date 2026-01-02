@@ -5,7 +5,7 @@ This is part of the OpenMM molecular simulation toolkit.
 See https://openmm.org/development.
 
 Portions copyright (c) 2013-2025 Stanford University and the Authors.
-Authors: Peter Eastman
+Authors: Peter Eastman, Neoralab
 Contributors:
 
 Permission is hereby granted, free of charge, to any person obtaining a
@@ -27,10 +27,9 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 from __future__ import absolute_import
-from dataclasses import dataclass
 from importlib.metadata import PackageNotFoundError, version
-from typing import Literal, Optional
-__author__ = "Peter Eastman"
+from typing import Optional
+__author__ = "Peter Eastman, Neoralab"
 try:
     __version__ = version("pdbfixer")
 except PackageNotFoundError:
@@ -43,6 +42,7 @@ from openmm.app.internal.pdbstructure import PdbStructure
 from openmm.app.internal.pdbx.reader.PdbxReader import PdbxReader
 from openmm.app.element import hydrogen, oxygen
 from openmm.app.forcefield import NonbondedGenerator
+from pdbfixer.ccd_definitions import CCD_DOWNLOAD_URL, CCDResidueDefinition
 
 # Support Cythonized functions in OpenMM 7.3
 # and also implementations in older versions.
@@ -109,91 +109,6 @@ class Template:
         if terminal is None:
             terminal = [False]*topology.getNumAtoms()
         self.terminal = terminal
-
-@dataclass
-class CCDAtomDefinition:
-    """
-    Description of an atom in a residue from the Chemical Component Dictionary (CCD).
-    """
-    atomName: str
-    symbol: str
-    leaving: bool
-    coords: mm.Vec3
-    charge: int
-    aromatic: bool
-
-@dataclass
-class CCDBondDefinition:
-    """
-    Description of a bond in a residue from the Chemical Component Dictionary (CCD).
-    """
-    atom1: str
-    atom2: str
-    order: Literal['SING', 'DOUB', 'TRIP', 'QUAD', 'AROM', 'DELO', 'PI', 'POLY']
-    aromatic: bool
-
-@dataclass
-class CCDResidueDefinition:
-    """
-    Description of a residue from the Chemical Component Dictionary (CCD).
-    """
-    residueName: str
-    atoms: list[CCDAtomDefinition]
-    bonds: list[CCDBondDefinition]
-
-    @classmethod
-    def fromReader(cls, reader: PdbxReader) -> 'CCDResidueDefinition':
-        """
-        Create a CCDResidueDefinition by parsing a CCD CIF file.
-        """
-        data = []
-        reader.read(data)
-        block = data[0]
-
-        residueName = block.getObj('chem_comp').getValue("id")
-
-        atomData = block.getObj('chem_comp_atom')
-        if atomData is None:
-            # The file doesn't contain any atoms, so report that no definition is available.
-            return None
-        atomNameCol = atomData.getAttributeIndex('atom_id')
-        symbolCol = atomData.getAttributeIndex('type_symbol')
-        leavingCol = atomData.getAttributeIndex('pdbx_leaving_atom_flag')
-        xCol = atomData.getAttributeIndex('pdbx_model_Cartn_x_ideal')
-        yCol = atomData.getAttributeIndex('pdbx_model_Cartn_y_ideal')
-        zCol = atomData.getAttributeIndex('pdbx_model_Cartn_z_ideal')
-        chargeCol = atomData.getAttributeIndex('charge')
-        aromaticCol = atomData.getAttributeIndex('pdbx_aromatic_flag')
-
-        atoms = [
-            CCDAtomDefinition(
-                atomName=row[atomNameCol],
-                symbol=row[symbolCol],
-                leaving=row[leavingCol] == 'Y',
-                coords=mm.Vec3(float(row[xCol]), float(row[yCol]), float(row[zCol]))*0.1,
-                charge=row[chargeCol] if row[chargeCol] != "?" else 0,
-                aromatic=row[aromaticCol] == 'Y'
-            ) for row in atomData.getRowList()
-        ]
-
-        bondData = block.getObj('chem_comp_bond')
-        if bondData is not None:
-            atom1Col = bondData.getAttributeIndex('atom_id_1')
-            atom2Col = bondData.getAttributeIndex('atom_id_2')
-            orderCol = bondData.getAttributeIndex('value_order')
-            aromaticCol = bondData.getAttributeIndex('pdbx_aromatic_flag')
-            bonds = [
-                CCDBondDefinition(
-                    atom1=row[atom1Col],
-                    atom2=row[atom2Col],
-                    order=row[orderCol],
-                    aromatic=row[aromaticCol] == 'Y',
-                ) for row in bondData.getRowList()
-            ]
-        else:
-            bonds = []
-
-        return cls(residueName=residueName, atoms=atoms, bonds=bonds)
 
 def _guessFileFormat(file, filename):
     """Guess whether a file is PDB or PDBx/mmCIF based on its filename and contents."""
@@ -475,18 +390,12 @@ class PDBFixer(object):
 
         This method caches results in the ``PDBFixer`` object.
 
-        Parameters
-        ----------
-        residueName : str
-            The name of the residue, as specified in the PDB Chemical Component
-            Dictionary.
+        Args:
+            residueName: Residue identifier in the PDB Chemical Component Dictionary.
 
-        Returns
-        -------
-        None
-            If the residue could not be downloaded.
-        ccdDefinition : CCDResidueDefinition
-            The CCD definition for the requested residue.
+        Returns:
+            CCDResidueDefinition instance when available, otherwise ``None`` if the
+            residue could not be downloaded or contained no atoms.
         """
         residueName = residueName.upper()
 
@@ -494,7 +403,9 @@ class PDBFixer(object):
             return self._ccdCache[residueName]
 
         try:
-            file = urlopen(f'https://files.rcsb.org/ligands/download/{residueName}.cif')
+            download_url = CCD_DOWNLOAD_URL.format(residue=residueName)
+            # Network IO is intentionally narrow to a single well-known endpoint.
+            file = urlopen(download_url)
             contents = file.read().decode('utf-8')
             file.close()
         except:
@@ -505,7 +416,7 @@ class PDBFixer(object):
             return None
 
         reader = PdbxReader(StringIO(contents))
-        ccdDefinition = CCDResidueDefinition.fromReader(reader)
+        ccdDefinition = CCDResidueDefinition.from_reader(reader)
         self._ccdCache[residueName] = ccdDefinition
         return ccdDefinition
 
@@ -566,7 +477,7 @@ class PDBFixer(object):
         atomByName = {}
         terminal = []
         for atomDefinition in ccdDefinition.atoms:
-            atomName = atomDefinition.atomName
+            atomName = atomDefinition.atom_name
             atom = topology.addAtom(atomName, app.Element.getBySymbol(atomDefinition.symbol), residue)
             atomByName[atomName] = atom
             terminal.append(atomDefinition.leaving)
@@ -1416,7 +1327,7 @@ class PDBFixer(object):
                     continue
 
                 # Record the atoms and bonds.
-                atoms = [(atom.atomName, atom.symbol.upper(), atom.leaving) for atom in ccdDefinition.atoms]
+                atoms = [(atom.atom_name, atom.symbol.upper(), atom.leaving) for atom in ccdDefinition.atoms]
                 bonds = [(bond.atom1, bond.atom2) for bond in ccdDefinition.bonds]
                 definitions[name] = (atoms, bonds)
         return definitions
@@ -1578,7 +1489,7 @@ class PDBFixer(object):
 
         # Record the formal charges.
         return {
-            atom.atomName: atom.charge
+            atom.atom_name: atom.charge
             for atom in ccdDefinition.atoms
             if includeLeavingAtoms or not atom.leaving
         }
