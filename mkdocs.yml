@@ -1,0 +1,36 @@
+site_name: PDBFixer
+site_description: "Repair and prepare PDB files before simulation"
+site_url: https://neoralab.github.io/pdbfixer/
+repo_url: https://github.com/neoralab/pdbfixer
+repo_name: neoralab/pdbfixer
+docs_dir: docs
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - toc.integrate
+    - content.code.copy
+markdown_extensions:
+  - admonition
+  - codehilite
+  - toc:
+      permalink: true
+  - footnotes
+  - def_list
+  - pymdownx.superfences
+  - pymdownx.tabbed
+  - pymdownx.details
+plugins:
+  - search
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Quickstart: quickstart.md
+  - Usage: usage.md
+  - Configuration: configuration.md
+  - Reference: reference.md
+  - Examples: examples.md
+  - Troubleshooting: troubleshooting.md
+  - Contributing: contributing.md
