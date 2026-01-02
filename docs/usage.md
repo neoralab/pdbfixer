@@ -45,5 +45,3 @@ The `PDBFile` writer supports gzip-compressed outputs if you provide a `.gz` fil
 - Register a nonstandard residue template with `fixer.registerTemplate(topology, positions, terminal=None)` when you want to add or mutate residues not shipped in the built-in templates.
 - Automatically download a template from the Chemical Component Dictionary with `fixer.downloadTemplate("ABC")`. Downloads are cached per `PDBFixer` instance.
 
-## Legacy manual
-A legacy single-page reference remains available in the upstream repository as [`Manual.html`](https://htmlpreview.github.io/?https://github.com/openmm/pdbfixer/blob/master/Manual.html) if you prefer a printable resource.
