@@ -5,13 +5,12 @@
 <p align="center">
   <a href="https://github.com/openmm/pdbfixer/actions/workflows/CI.yml"><img src="https://github.com/openmm/pdbfixer/actions/workflows/CI.yml/badge.svg" alt="CI Status"></a>
   <a href="https://pypi.org/project/pdbfixer-neoralab/"><img src="https://img.shields.io/pypi/v/pdbfixer-neoralab.svg" alt="PyPI Version"></a>
-  <a href="https://anaconda.org/conda-forge/pdbfixer"><img src="https://img.shields.io/conda/vn/conda-forge/pdbfixer.svg?logo=anaconda" alt="Conda Forge"></a>
   <a href="https://pypistats.org/packages/pdbfixer-neoralab"><img src="https://img.shields.io/pypi/dm/pdbfixer-neoralab.svg" alt="PyPI Downloads"></a>
+  <a href="https://github.com/astral-sh/uv"><img src="https://img.shields.io/badge/uv-ready-000000?logo=uv&logoColor=white" alt="uv Ready"></a>
   <a href="https://pypi.org/project/pdbfixer-neoralab/"><img src="https://img.shields.io/badge/Python-%3E%3D3.11-3776AB?logo=python&logoColor=white" alt="Python Versions"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue.svg" alt="License: Apache-2.0"></a>
   <a href="https://neoralab.github.io/pdbfixer/"><img src="https://img.shields.io/badge/docs-site-0d72bd.svg" alt="MkDocs Site"></a>
-  <a href="https://github.com/neoralab/pdbfixer/actions/workflows/docs.yml"><img src="https://img.shields.io/github/actions/workflow/status/neoralab/pdbfixer/docs.yml?branch=main&label=docs" alt="Docs Status"></a>
-  <a href="https://htmlpreview.github.io/?https://github.com/openmm/pdbfixer/blob/master/Manual.html"><img src="https://img.shields.io/badge/docs-Manual-0d72bd.svg" alt="Legacy Manual"></a>
+  <a href="https://github.com/neoralab/pdbfixer/actions/workflows/DOC.yml"><img src="https://img.shields.io/github/actions/workflow/status/neoralab/pdbfixer/DOC.yml?branch=main&label=docs" alt="Docs Status"></a>
   <a href="https://github.com/neoralab/pdbfixer/graphs/contributors"><img src="https://img.shields.io/badge/authors-neoralab%20team-7c3aed.svg" alt="neoralab Authors"></a>
   <a href="https://github.com/openmm/pdbfixer/graphs/contributors"><img src="https://img.shields.io/badge/authors-OpenMM%20team-7c3aed.svg" alt="OpenMM Authors"></a>
 </p>
@@ -23,7 +22,7 @@ an intuitive API that automates common cleanup steps so structures are ready for
 editing.
 
 This Neoralab-maintained fork builds on the original OpenMM release, extending the codebase with modern packaging,
-documentation, and interface updates reflected in the refreshed manual.
+documentation, and interface updates reflected in the refreshed docs site.
 
 ## Overview
 
@@ -36,8 +35,7 @@ PDBFixer can automatically:
 - Remove unwanted chains or heterogens.
 - Build a water box for explicit solvent simulations.
 
-Consult the responsive [manual](Manual.html) for full usage guidance. If browsing online, use the GitHub-hosted preview
-at [htmlpreview.github.io](https://htmlpreview.github.io/?https://github.com/openmm/pdbfixer/blob/master/Manual.html).
+Refer to the [MkDocs site](https://neoralab.github.io/pdbfixer/) for detailed usage guidance, API notes, and examples.
 
 ## Documentation
 
@@ -75,7 +73,7 @@ conda install -c conda-forge pdbfixer
 
 ### From source
 
-Clone the repository and follow the manual for source installation details.
+Clone the repository and follow the documentation for source installation details.
 
 ### Optional extras
 

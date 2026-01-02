@@ -35,4 +35,4 @@ The `pdbfixer` package exposes a single main class, `PDBFixer`, plus helper func
 ### Saving
 Persist the repaired structure with `openmm.app.PDBFile.writeFile(fixer.topology, fixer.positions, handle)`.
 
-Refer to the source docstrings for argument defaults and return types. The bundled `Manual.html` includes more narrative explanations of each routine.
+Refer to the source docstrings for argument defaults and return types. The MkDocs pages in this site provide narrative explanations of each routine.
