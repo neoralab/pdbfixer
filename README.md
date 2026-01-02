@@ -77,6 +77,13 @@ conda install -c conda-forge pdbfixer
 
 Clone the repository and follow the manual for source installation details.
 
+### Optional extras
+
+PDBFixer defines extras for common contributor workflows that match the entries in `pyproject.toml`:
+
+- Tests: `pip install -e .[tests]`
+- Documentation: `pip install -e .[docs]`
+
 ## Versioning
 
 PDBFixer uses [versioningit](https://versioningit.readthedocs.io/) to derive its version from Git tags. Building from a
