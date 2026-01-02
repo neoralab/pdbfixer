@@ -6,6 +6,7 @@
   <a href="https://github.com/openmm/pdbfixer/actions/workflows/CI.yml"><img src="https://github.com/openmm/pdbfixer/actions/workflows/CI.yml/badge.svg" alt="CI Status"></a>
   <a href="https://pypi.org/project/pdbfixer-neoralab/"><img src="https://img.shields.io/pypi/v/pdbfixer-neoralab.svg" alt="PyPI Version"></a>
   <a href="https://anaconda.org/conda-forge/pdbfixer"><img src="https://img.shields.io/conda/vn/conda-forge/pdbfixer.svg?logo=anaconda" alt="Conda Forge"></a>
+  <a href="https://pypistats.org/packages/pdbfixer-neoralab"><img src="https://img.shields.io/pypi/dm/pdbfixer-neoralab.svg" alt="PyPI Downloads"></a>
   <a href="https://pypi.org/project/pdbfixer-neoralab/"><img src="https://img.shields.io/badge/Python-%3E%3D3.11-3776AB?logo=python&logoColor=white" alt="Python Versions"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue.svg" alt="License: Apache-2.0"></a>
   <a href="https://htmlpreview.github.io/?https://github.com/openmm/pdbfixer/blob/master/Manual.html"><img src="https://img.shields.io/badge/docs-Manual-0d72bd.svg" alt="Documentation"></a>
