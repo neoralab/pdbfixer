@@ -5,7 +5,7 @@ This is part of the OpenMM molecular simulation toolkit.
 See https://openmm.org/development.
 
 Portions copyright (c) 2013-2025 Stanford University and the Authors.
-Authors: Peter Eastman
+Authors: Peter Eastman, Neoralab
 Contributors:
 
 Permission is hereby granted, free of charge, to any person obtaining a
@@ -27,10 +27,13 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 from __future__ import absolute_import
-from dataclasses import dataclass
-from typing import Literal, Optional
-__author__ = "Peter Eastman"
-__version__ = "1.7"
+from importlib.metadata import PackageNotFoundError, version
+from typing import Callable, IO, Optional, Union
+__author__ = "Peter Eastman, Neoralab"
+try:
+    __version__ = version("pdbfixer")
+except PackageNotFoundError:
+    __version__ = "0+unknown"
 
 import openmm as mm
 import openmm.app as app
@@ -39,6 +42,7 @@ from openmm.app.internal.pdbstructure import PdbStructure
 from openmm.app.internal.pdbx.reader.PdbxReader import PdbxReader
 from openmm.app.element import hydrogen, oxygen
 from openmm.app.forcefield import NonbondedGenerator
+from pdbfixer.ccd_definitions import CCD_DOWNLOAD_URL, CCDResidueDefinition
 
 # Support Cythonized functions in OpenMM 7.3
 # and also implementations in older versions.
@@ -56,32 +60,27 @@ import os.path
 import math
 from collections import defaultdict
 
-if sys.version_info >= (3,0):
+if sys.version_info >= (3, 0):
     from urllib.request import urlopen
+    from urllib.error import HTTPError, URLError
     from io import StringIO
 else:
     from urllib2 import urlopen
+    from urllib2 import HTTPError, URLError
     from cStringIO import StringIO
 
-substitutions = {
-    '2AS':'ASP', '3AH':'HIS', '5HP':'GLU', '5OW':'LYS', 'ACL':'ARG', 'AGM':'ARG', 'AIB':'ALA', 'ALM':'ALA', 'ALO':'THR', 'ALY':'LYS', 'ARM':'ARG',
-    'ASA':'ASP', 'ASB':'ASP', 'ASK':'ASP', 'ASL':'ASP', 'ASQ':'ASP', 'AYA':'ALA', 'BCS':'CYS', 'BHD':'ASP', 'BMT':'THR', 'BNN':'ALA',
-    'BUC':'CYS', 'BUG':'LEU', 'C5C':'CYS', 'C6C':'CYS', 'CAS':'CYS', 'CCS':'CYS', 'CEA':'CYS', 'CGU':'GLU', 'CHG':'ALA', 'CLE':'LEU', 'CME':'CYS',
-    'CSD':'ALA', 'CSO':'CYS', 'CSP':'CYS', 'CSS':'CYS', 'CSW':'CYS', 'CSX':'CYS', 'CXM':'MET', 'CY1':'CYS', 'CY3':'CYS', 'CYG':'CYS',
-    'CYM':'CYS', 'CYQ':'CYS', 'DAH':'PHE', 'DAL':'ALA', 'DAR':'ARG', 'DAS':'ASP', 'DCY':'CYS', 'DGL':'GLU', 'DGN':'GLN', 'DHA':'ALA',
-    'DHI':'HIS', 'DIL':'ILE', 'DIV':'VAL', 'DLE':'LEU', 'DLY':'LYS', 'DNP':'ALA', 'DPN':'PHE', 'DPR':'PRO', 'DSN':'SER', 'DSP':'ASP',
-    'DTH':'THR', 'DTR':'TRP', 'DTY':'TYR', 'DVA':'VAL', 'EFC':'CYS', 'FLA':'ALA', 'FME':'MET', 'GGL':'GLU', 'GL3':'GLY', 'GLZ':'GLY',
-    'GMA':'GLU', 'GSC':'GLY', 'HAC':'ALA', 'HAR':'ARG', 'HIC':'HIS', 'HIP':'HIS', 'HMR':'ARG', 'HPQ':'PHE', 'HTR':'TRP', 'HYP':'PRO',
-    'IAS':'ASP', 'IIL':'ILE', 'IYR':'TYR', 'KCX':'LYS', 'LLP':'LYS', 'LLY':'LYS', 'LTR':'TRP', 'LYM':'LYS', 'LYZ':'LYS', 'MAA':'ALA', 'MEN':'ASN',
-    'MHS':'HIS', 'MIS':'SER', 'MK8':'LEU', 'MLE':'LEU', 'MPQ':'GLY', 'MSA':'GLY', 'MSE':'MET', 'MVA':'VAL', 'NEM':'HIS', 'NEP':'HIS', 'NLE':'LEU',
-    'NLN':'LEU', 'NLP':'LEU', 'NMC':'GLY', 'OAS':'SER', 'OCS':'CYS', 'OMT':'MET', 'PAQ':'TYR', 'PCA':'GLU', 'PEC':'CYS', 'PHI':'PHE',
-    'PHL':'PHE', 'PR3':'CYS', 'PRR':'ALA', 'PTR':'TYR', 'PYX':'CYS', 'SAC':'SER', 'SAR':'GLY', 'SCH':'CYS', 'SCS':'CYS', 'SCY':'CYS',
-    'SEL':'SER', 'SEP':'SER', 'SET':'SER', 'SHC':'CYS', 'SHR':'LYS', 'SMC':'CYS', 'SOC':'CYS', 'STY':'TYR', 'SVA':'SER', 'TIH':'ALA',
-    'TPL':'TRP', 'TPO':'THR', 'TPQ':'ALA', 'TRG':'LYS', 'TRO':'TRP', 'TYB':'TYR', 'TYI':'TYR', 'TYQ':'TYR', 'TYS':'TYR', 'TYY':'TYR'
-}
-proteinResidues = ['ALA', 'ASN', 'CYS', 'GLU', 'HIS', 'LEU', 'MET', 'PRO', 'THR', 'TYR', 'ARG', 'ASP', 'GLN', 'GLY', 'ILE', 'LYS', 'PHE', 'SER', 'TRP', 'VAL']
-rnaResidues = ['A', 'G', 'C', 'U', 'I']
-dnaResidues = ['DA', 'DG', 'DC', 'DT', 'DI']
+from pdbfixer._constants import (
+    CONTACT_CUTOFF_NM,
+    DIRECTION_MIN_DISTANCE,
+    DNA_RESIDUES,
+    PEPTIDE_SPACING_NM,
+    PROTEIN_RESIDUES,
+    RCSB_PDB_DOWNLOAD_URL,
+    RNA_RESIDUES,
+    SUBSTITUTIONS,
+    VDW_RADII,
+)
+from pdbfixer._types import BoxShape, CCDCacheEntry, FileFormat, PDBFixerInput
 
 class Sequence(object):
     """Sequence holds the sequence of a chain, as specified by SEQRES records."""
@@ -106,110 +105,69 @@ class Template:
             terminal = [False]*topology.getNumAtoms()
         self.terminal = terminal
 
-@dataclass
-class CCDAtomDefinition:
-    """
-    Description of an atom in a residue from the Chemical Component Dictionary (CCD).
-    """
-    atomName: str
-    symbol: str
-    leaving: bool
-    coords: mm.Vec3
-    charge: int
-    aromatic: bool
+def normalize_file_format(format_value: Union[str, FileFormat]) -> FileFormat:
+    """Normalize a file format specifier to a :class:`FileFormat` value."""
 
-@dataclass
-class CCDBondDefinition:
-    """
-    Description of a bond in a residue from the Chemical Component Dictionary (CCD).
-    """
-    atom1: str
-    atom2: str
-    order: Literal['SING', 'DOUB', 'TRIP', 'QUAD', 'AROM', 'DELO', 'PI', 'POLY']
-    aromatic: bool
+    if isinstance(format_value, FileFormat):
+        return format_value
+    return FileFormat.from_value(str(format_value))
 
-@dataclass
-class CCDResidueDefinition:
-    """
-    Description of a residue from the Chemical Component Dictionary (CCD).
-    """
-    residueName: str
-    atoms: list[CCDAtomDefinition]
-    bonds: list[CCDBondDefinition]
 
-    @classmethod
-    def fromReader(cls, reader: PdbxReader) -> 'CCDResidueDefinition':
-        """
-        Create a CCDResidueDefinition by parsing a CCD CIF file.
-        """
-        data = []
-        reader.read(data)
-        block = data[0]
+def guess_file_format_from_text(text: str, filename: str = "") -> FileFormat:
+    """Guess file format from text content and filename."""
 
-        residueName = block.getObj('chem_comp').getValue("id")
-
-        atomData = block.getObj('chem_comp_atom')
-        if atomData is None:
-            # The file doesn't contain any atoms, so report that no definition is available.
-            return None
-        atomNameCol = atomData.getAttributeIndex('atom_id')
-        symbolCol = atomData.getAttributeIndex('type_symbol')
-        leavingCol = atomData.getAttributeIndex('pdbx_leaving_atom_flag')
-        xCol = atomData.getAttributeIndex('pdbx_model_Cartn_x_ideal')
-        yCol = atomData.getAttributeIndex('pdbx_model_Cartn_y_ideal')
-        zCol = atomData.getAttributeIndex('pdbx_model_Cartn_z_ideal')
-        chargeCol = atomData.getAttributeIndex('charge')
-        aromaticCol = atomData.getAttributeIndex('pdbx_aromatic_flag')
-
-        atoms = [
-            CCDAtomDefinition(
-                atomName=row[atomNameCol],
-                symbol=row[symbolCol],
-                leaving=row[leavingCol] == 'Y',
-                coords=mm.Vec3(float(row[xCol]), float(row[yCol]), float(row[zCol]))*0.1,
-                charge=row[chargeCol] if row[chargeCol] != "?" else 0,
-                aromatic=row[aromaticCol] == 'Y'
-            ) for row in atomData.getRowList()
-        ]
-
-        bondData = block.getObj('chem_comp_bond')
-        if bondData is not None:
-            atom1Col = bondData.getAttributeIndex('atom_id_1')
-            atom2Col = bondData.getAttributeIndex('atom_id_2')
-            orderCol = bondData.getAttributeIndex('value_order')
-            aromaticCol = bondData.getAttributeIndex('pdbx_aromatic_flag')
-            bonds = [
-                CCDBondDefinition(
-                    atom1=row[atom1Col],
-                    atom2=row[atom2Col],
-                    order=row[orderCol],
-                    aromatic=row[aromaticCol] == 'Y',
-                ) for row in bondData.getRowList()
-            ]
-        else:
-            bonds = []
-
-        return cls(residueName=residueName, atoms=atoms, bonds=bonds)
-
-def _guessFileFormat(file, filename):
-    """Guess whether a file is PDB or PDBx/mmCIF based on its filename and contents."""
-    filename = filename.lower()
-    if '.pdbx' in filename or '.cif' in filename:
-        return 'pdbx'
-    if '.pdb' in filename:
-        return 'pdb'
-    for line in file:
+    lower_name = filename.lower()
+    if '.pdbx' in lower_name or '.cif' in lower_name:
+        return FileFormat.PDBX
+    if '.pdb' in lower_name:
+        return FileFormat.PDB
+    for line in text.splitlines():
         if line.startswith('data_') or line.startswith('loop_'):
-            file.seek(0)
-            return 'pdbx'
+            return FileFormat.PDBX
         if line.startswith('HEADER') or line.startswith('REMARK') or line.startswith('TITLE '):
-            file.seek(0)
-            return 'pdb'
+            return FileFormat.PDB
 
-    # It's certainly not a valid PDBx/mmCIF.  Guess that it's a PDB.
+    return FileFormat.PDB
 
-    file.seek(0)
-    return 'pdb'
+
+def _guessFileFormat(file: IO[str], filename: str) -> FileFormat:
+    """Guess whether a file is PDB or PDBx/mmCIF based on its filename and contents."""
+
+    start_position = file.tell()
+    try:
+        file.seek(0)
+        lines: list[str] = []
+        for _ in range(50):
+            line = file.readline()
+            if not line:
+                break
+            lines.append(line)
+    finally:
+        file.seek(start_position)
+    return guess_file_format_from_text(''.join(lines), filename)
+
+
+def normalize_box_shape(box_shape: Union[str, BoxShape]) -> BoxShape:
+    """Normalize box shape to a :class:`BoxShape`."""
+
+    if isinstance(box_shape, BoxShape):
+        return box_shape
+    return BoxShape.from_value(str(box_shape))
+
+
+def ensure_text_io(handle: Union[str, IO[str]]) -> IO[str]:
+    """Return a text IO handle for a string or file-like object without closing the original."""
+
+    if isinstance(handle, str):
+        return StringIO(handle)
+    return handle
+
+
+def _parse_ccd_definition(contents: str) -> Optional[CCDResidueDefinition]:
+    """Parse CCD text contents into a :class:`CCDResidueDefinition`."""
+
+    reader = PdbxReader(StringIO(contents))
+    return CCDResidueDefinition.from_reader(reader)
 
 def _overlayPoints(points1, points2):
     """Given two sets of points, determine the translation and rotation that matches them as closely as possible.
@@ -283,7 +241,7 @@ def _findUnoccupiedDirection(point, positions):
     for pos in positions.value_in_unit(unit.nanometers):
         delta = pos-point
         distance = unit.norm(delta)
-        if distance > 0.1:
+        if distance > DIRECTION_MIN_DISTANCE:
             distance2 = distance*distance
             direction -= delta/(distance2*distance2)
     direction /= unit.norm(direction)
@@ -343,38 +301,34 @@ class PDBFixer(object):
 
         """
 
-        # Check to make sure only one option has been specified.
-        if bool(filename) + bool(pdbfile) + bool(pdbxfile) + bool(url) + bool(pdbid) != 1:
-            raise Exception("Exactly one option [filename, pdbfile, pdbxfile, url, pdbid] must be specified.")
+        source_type, source_value = PDBFixerInput(
+            filename=filename,
+            pdbfile=pdbfile,
+            pdbxfile=pdbxfile,
+            url=url,
+            pdbid=pdbid,
+        ).selected_source()
 
         self.platform = platform
         self.source = None
-        if pdbid:
-            # A PDB id has been specified.
-            url = 'http://www.rcsb.org/pdb/files/%s.pdb' % pdbid
-        if filename:
-            # A local file has been specified.
-            self.source = filename
-            file = open(filename, 'r')
-            if _guessFileFormat(file, filename) == 'pdbx':
-                self._initializeFromPDBx(file)
-            else:
-                self._initializeFromPDB(file)
-            file.close()
-        elif pdbfile:
-            # A file-like object has been specified.
-            self._initializeFromPDB(pdbfile)
-        elif pdbxfile:
-            # A file-like object has been specified.
-            self._initializeFromPDBx(pdbxfile)
-        elif url:
-            # A URL has been specified.
-            self.source = url
-            file = urlopen(url)
-            contents = file.read().decode('utf-8')
-            file.close()
-            file = StringIO(contents)
-            if _guessFileFormat(file, url) == 'pdbx':
+        if source_type == "pdbid":
+            source_value = RCSB_PDB_DOWNLOAD_URL.format(pdbid=source_value)
+            source_type = "url"
+        if source_type == "filename":
+            self.source = source_value
+            with open(source_value, 'r') as file:
+                if _guessFileFormat(file, source_value) == FileFormat.PDBX:
+                    self._initializeFromPDBx(file)
+                else:
+                    self._initializeFromPDB(file)
+        elif source_type == "pdbfile":
+            self._initializeFromPDB(source_value)
+        elif source_type == "pdbxfile":
+            self._initializeFromPDBx(source_value)
+        elif source_type == "url":
+            self.source = source_value
+            contents = self._download_text(source_value)
+            if guess_file_format_from_text(contents, source_value) == FileFormat.PDBX:
                 self._initializeFromPDBx(contents)
             else:
                 self._initializeFromPDB(StringIO(contents))
@@ -385,7 +339,7 @@ class PDBFixer(object):
             raise Exception("Structure contains no atoms.")
 
         # Keep a cache of downloaded CCD definitions
-        self._ccdCache = {}
+        self._ccdCache: dict[str, CCDCacheEntry] = {}
 
         # Load the templates.
 
@@ -411,14 +365,16 @@ class PDBFixer(object):
     def _initializeFromPDBx(self, file):
         """Initialize this object by reading a PDBx/mmCIF file."""
 
-        pdbx = app.PDBxFile(file)
+        handle = ensure_text_io(file)
+        handle.seek(0)
+        pdbx = app.PDBxFile(handle)
         self.topology = pdbx.topology
         self.positions = pdbx.positions
 
         # PDBxFile doesn't record the information about sequence or modified residues, so we need to read them separately.
 
-        file.seek(0)
-        reader = PdbxReader(file)
+        handle.seek(0)
+        reader = PdbxReader(handle)
         data = []
         reader.read(data)
         block = data[0]
@@ -463,46 +419,51 @@ class PDBFixer(object):
             if -1 not in (asymIdCol, resNameCol, resNumCol, standardResCol):
                 for row in modData.getRowList():
                     self.modifiedResidues.append(ModifiedResidue(row[asymIdCol], int(row[resNumCol]), row[resNameCol], row[standardResCol]))
+    def _default_downloader(self, url: str) -> bytes:
+        """Download raw bytes from a URL using ``urlopen``."""
+
+        with urlopen(url) as response:
+            return response.read()
+
+    def _download_text(self, url: str, downloader: Optional[Callable[[str], bytes]] = None) -> str:
+        """Download text content from a URL."""
+
+        if downloader is None:
+            downloader = self._default_downloader
+        return downloader(url).decode('utf-8')
 
 
-    def _downloadCCDDefinition(self, residueName: str) -> Optional[CCDResidueDefinition]:
+    def _downloadCCDDefinition(self, residueName: str, downloader: Optional[Callable[[str], bytes]] = None) -> Optional[CCDResidueDefinition]:
         """
         Download a residue definition from the Chemical Component Dictionary.
 
         This method caches results in the ``PDBFixer`` object.
 
-        Parameters
-        ----------
-        residueName : str
-            The name of the residue, as specified in the PDB Chemical Component
-            Dictionary.
+        Args:
+            residueName: Residue identifier in the PDB Chemical Component Dictionary.
 
-        Returns
-        -------
-        None
-            If the residue could not be downloaded.
-        ccdDefinition : CCDResidueDefinition
-            The CCD definition for the requested residue.
+        Returns:
+            CCDResidueDefinition instance when available, otherwise ``None`` if the
+            residue could not be downloaded or contained no atoms.
         """
         residueName = residueName.upper()
 
         if residueName in self._ccdCache:
-            return self._ccdCache[residueName]
+            return self._ccdCache[residueName].definition
 
+        download_url = CCD_DOWNLOAD_URL.format(residue=residueName)
         try:
-            file = urlopen(f'https://files.rcsb.org/ligands/download/{residueName}.cif')
-            contents = file.read().decode('utf-8')
-            file.close()
-        except:
-            # None represents that the residue has been looked up and could not
-            # be found. This is distinct from an entry simply not being present
-            # in the cache.
-            self._ccdCache[residueName] = None
+            contents = self._download_text(download_url, downloader=downloader)
+        except (HTTPError, URLError):
+            self._ccdCache[residueName] = CCDCacheEntry(residue_name=residueName, definition=None, available=False)
             return None
 
-        reader = PdbxReader(StringIO(contents))
-        ccdDefinition = CCDResidueDefinition.fromReader(reader)
-        self._ccdCache[residueName] = ccdDefinition
+        ccdDefinition = _parse_ccd_definition(contents)
+        self._ccdCache[residueName] = CCDCacheEntry(
+            residue_name=residueName,
+            definition=ccdDefinition,
+            available=ccdDefinition is not None,
+        )
         return ccdDefinition
 
     def _getTemplate(self, name):
@@ -562,7 +523,7 @@ class PDBFixer(object):
         atomByName = {}
         terminal = []
         for atomDefinition in ccdDefinition.atoms:
-            atomName = atomDefinition.atomName
+            atomName = atomDefinition.atom_name
             atom = topology.addAtom(atomName, app.Element.getBySymbol(atomDefinition.symbol), residue)
             atomByName[atomName] = atom
             terminal.append(atomDefinition.leaving)
@@ -698,7 +659,7 @@ class PDBFixer(object):
                         firstIndex = int(residue.id)+1
                         self._addMissingResiduesToChain(newChain, insertHere, startPosition, endPosition, None, residue, newAtoms, newPositions, firstIndex)
                         newResidue = list(newChain.residues())[-1]
-                        if newResidue.name in proteinResidues:
+                        if newResidue.name in PROTEIN_RESIDUES:
                             terminalsToAdd = ['OXT']
                         else:
                             terminalsToAdd = None
@@ -751,10 +712,10 @@ class PDBFixer(object):
 
         length = unit.norm(endPosition-startPosition)
         numResidues = len(residueNames)
-        if length > numResidues*0.3*unit.nanometers:
+        if length > numResidues*PEPTIDE_SPACING_NM*unit.nanometers:
             loopHeight = 0*unit.nanometers
         else:
-            loopHeight = (numResidues*0.3*unit.nanometers-length)/2
+            loopHeight = (numResidues*PEPTIDE_SPACING_NM*unit.nanometers-length)/2
 
         # Add the residues.
 
@@ -937,8 +898,8 @@ class PDBFixer(object):
                         if key not in self.missingResidues:
                             self.missingResidues[key] = []
                         residueName = sequence[i]
-                        if residueName in substitutions:
-                            residueName = substitutions[sequence[i]]
+                        if residueName in SUBSTITUTIONS:
+                            residueName = SUBSTITUTIONS[sequence[i]]
                         self.missingResidues[key].append(residueName)
                     else:
                         index += 1
@@ -962,7 +923,7 @@ class PDBFixer(object):
 
         # First find residues based on our table of standard substitutions.
 
-        nonstandard = dict((r, substitutions[r.name]) for r in self.topology.residues() if r.name in substitutions)
+        nonstandard = dict((r, SUBSTITUTIONS[r.name]) for r in self.topology.residues() if r.name in SUBSTITUTIONS)
 
         # Now add ones based on MODRES records.
 
@@ -1155,7 +1116,7 @@ class PDBFixer(object):
         # Loop over residues.
 
         for chain in self.topology.chains():
-            nucleic = any(res.name in dnaResidues or res.name in rnaResidues for res in chain.residues())
+            nucleic = any(res.name in DNA_RESIDUES or res.name in RNA_RESIDUES for res in chain.residues())
             chainResidues = list(chain.residues())
             for residue in chain.residues():
                 template = self._getTemplate(residue.name)
@@ -1298,7 +1259,7 @@ class PDBFixer(object):
                         exclusions[a1].add(a2.index)
                     if a2 in exclusions:
                         exclusions[a2].add(a1.index)
-                cutoff = 0.13
+                cutoff = CONTACT_CUTOFF_NM
                 nearest = self._findNearestDistance(context, newAtoms, cutoff, exclusions)
                 if nearest < cutoff:
 
@@ -1352,7 +1313,7 @@ class PDBFixer(object):
 
         """
 
-        keep = set(proteinResidues).union(dnaResidues).union(rnaResidues)
+        keep = set(PROTEIN_RESIDUES).union(DNA_RESIDUES).union(RNA_RESIDUES)
         keep.add('N')
         keep.add('UNK')
         if keepWater:
@@ -1412,7 +1373,7 @@ class PDBFixer(object):
                     continue
 
                 # Record the atoms and bonds.
-                atoms = [(atom.atomName, atom.symbol.upper(), atom.leaving) for atom in ccdDefinition.atoms]
+                atoms = [(atom.atom_name, atom.symbol.upper(), atom.leaving) for atom in ccdDefinition.atoms]
                 bonds = [(bond.atom1, bond.atom2) for bond in ccdDefinition.bonds]
                 definitions[name] = (atoms, bonds)
         return definitions
@@ -1521,9 +1482,10 @@ class PDBFixer(object):
 
         nChains = sum(1 for _ in self.topology.chains())
         modeller = app.Modeller(self.topology, self.positions)
+        normalized_shape = normalize_box_shape(boxShape)
         if forceField is None:
             forceField = self._createForceField(self.topology, True)
-        modeller.addSolvent(forceField, padding=padding, boxSize=boxSize, boxVectors=boxVectors, boxShape=boxShape, positiveIon=positiveIon, negativeIon=negativeIon, ionicStrength=ionicStrength)
+        modeller.addSolvent(forceField, padding=padding, boxSize=boxSize, boxVectors=boxVectors, boxShape=normalized_shape.value, positiveIon=positiveIon, negativeIon=negativeIon, ionicStrength=ionicStrength)
         self.topology = modeller.topology
         self.positions = modeller.positions
         self._renameNewChains(nChains)
@@ -1574,7 +1536,7 @@ class PDBFixer(object):
 
         # Record the formal charges.
         return {
-            atom.atomName: atom.charge
+            atom.atom_name: atom.charge
             for atom in ccdDefinition.atoms
             if includeLeavingAtoms or not atom.leaving
         }
@@ -1585,8 +1547,7 @@ class PDBFixer(object):
         if water:
             forcefield = app.ForceField('amber14-all.xml', 'amber14/tip3p.xml')
             nonbonded = [f for f in forcefield._forces if isinstance(f, NonbondedGenerator)][0]
-            radii = {'H':0.198, 'Li':0.203, 'C':0.340, 'N':0.325, 'O':0.299, 'F':0.312, 'Na':0.333, 'Mg':0.141,
-                     'P':0.374, 'S':0.356, 'Cl':0.347, 'K':0.474, 'Br':0.396, 'Rb':0.527, 'I':0.419, 'Cs':0.605}
+            radii = VDW_RADII
         else:
             forcefield = app.ForceField(os.path.join(os.path.dirname(__file__), 'soft.xml'))
 
@@ -1690,78 +1651,3 @@ class PDBFixer(object):
                     if dist_squared < nearest_squared:
                         nearest_squared = dist_squared
         return np.sqrt(nearest_squared)
-
-
-def main():
-    if len(sys.argv) < 2:
-        # Display the UI.
-        from . import ui
-        ui.launchUI()
-    else:
-        # Run in command line mode.
-
-        from optparse import OptionParser
-        parser = OptionParser(usage="Usage: %prog\n       %prog filename [options] \n\nWhen run with no arguments, it launches the user interface.  If any arguments are specified, it runs in command line mode.")
-        parser.add_option('--pdbid', default=None, dest='pdbid', metavar='PDBID', help='PDB id to retrieve from RCSB [default: None]')
-        parser.add_option('--url', default=None, dest='url', metavar='URL', help='URL to retrieve PDB from [default: None]')
-        parser.add_option('--output', default='output.pdb', dest='output', metavar='FILENAME', help='output pdb file [default: output.pdb]')
-        parser.add_option('--add-atoms', default='all', dest='atoms', choices=('all', 'heavy', 'hydrogen', 'none'), help='which missing atoms to add: all, heavy, hydrogen, or none [default: all]')
-        parser.add_option('--keep-heterogens', default='all', dest='heterogens', choices=('all', 'water', 'none'), metavar='OPTION', help='which heterogens to keep: all, water, or none [default: all]')
-        parser.add_option('--replace-nonstandard', action='store_true', default=False, dest='nonstandard', help='replace nonstandard residues with standard equivalents')
-        parser.add_option('--add-residues', action='store_true', default=False, dest='residues', help='add missing residues')
-        parser.add_option('--water-box', dest='box', type='float', nargs=3, metavar='X Y Z', help='add a water box. The value is the box dimensions in nm [example: --water-box=2.5 2.4 3.0]')
-        parser.add_option('--ph', type='float', default=7.0, dest='ph', help='the pH to use for adding missing hydrogens [default: 7.0]')
-        parser.add_option('--positive-ion', default='Na+', dest='positiveIon', choices=('Cs+', 'K+', 'Li+', 'Na+', 'Rb+'), metavar='ION', help='positive ion to include in the water box: Cs+, K+, Li+, Na+, or Rb+ [default: Na+]')
-        parser.add_option('--negative-ion', default='Cl-', dest='negativeIon', choices=('Cl-', 'Br-', 'F-', 'I-'), metavar='ION', help='negative ion to include in the water box: Cl-, Br-, F-, or I- [default: Cl-]')
-        parser.add_option('--ionic-strength', type='float', default=0.0, dest='ionic', metavar='STRENGTH', help='molar concentration of ions to add to the water box [default: 0.0]')
-        parser.add_option('--verbose', default=False, action='store_true', dest='verbose', metavar='VERBOSE', help='Print verbose output')
-        (options, args) = parser.parse_args()
-        if (len(args) == 0) and (options.pdbid==None) and (options.url==None):
-            parser.error('No filename specified')
-        if len(args) > 1:
-            parser.error('Must specify a single filename or --pdbid or --url')
-        if options.pdbid != None:
-            if options.verbose: print('Retrieving PDB "' + options.pdbid + '" from RCSB...')
-            fixer = PDBFixer(pdbid=options.pdbid)
-        elif options.url != None:
-            if options.verbose: print('Retrieving PDB from URL "' + options.url + '"...')
-            fixer = PDBFixer(url=options.url)
-        else:
-            fixer = PDBFixer(filename=sys.argv[1])
-        if options.residues:
-            if options.verbose: print('Finding missing residues...')
-            fixer.findMissingResidues()
-        else:
-            fixer.missingResidues = {}
-        if options.nonstandard:
-            if options.verbose: print('Finding nonstandard residues...')
-            fixer.findNonstandardResidues()
-            if options.verbose: print('Replacing nonstandard residues...')
-            fixer.replaceNonstandardResidues()
-        if options.heterogens == 'none':
-            fixer.removeHeterogens(False)
-        elif options.heterogens == 'water':
-            fixer.removeHeterogens(True)
-        if options.verbose: print('Finding missing atoms...')
-        fixer.findMissingAtoms()
-        if options.atoms not in ('all', 'heavy'):
-            fixer.missingAtoms = {}
-            fixer.missingTerminals = {}
-        if options.verbose: print('Adding missing atoms...')
-        fixer.addMissingAtoms()
-        if options.atoms in ('all', 'hydrogen'):
-            if options.verbose: print('Adding missing hydrogens...')
-            fixer.addMissingHydrogens(options.ph)
-        if options.box is not None:
-            if options.verbose: print('Adding solvent...')
-            fixer.addSolvent(boxSize=options.box*unit.nanometer, positiveIon=options.positiveIon,
-                negativeIon=options.negativeIon, ionicStrength=options.ionic*unit.molar)
-        with open(options.output, 'w') as f:
-            if options.verbose: print('Writing output...')
-            if fixer.source is not None:
-                f.write("REMARK   1 PDBFIXER FROM: %s\n" % fixer.source)
-            app.PDBFile.writeFile(fixer.topology, fixer.positions, f, True)
-        if options.verbose: print('Done.')
-
-if __name__ == '__main__':
-    main()

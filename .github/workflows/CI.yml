@@ -4,32 +4,36 @@ on:
   push:
     branches:
       - master
+      - develop
   pull_request:
     branches:
       - master
+      - develop
 
 jobs:
   build_test:
     runs-on: ubuntu-latest
+    env:
+      GITHUB_ACTION: "true"
     strategy:
       matrix:
-        python-version: ["3.11", "3.12", "3.13"]
+        python-version: ["3.11", "3.12"]
 
     steps:
-      - uses: actions/checkout@v2
-        name: "Checkout the source code"
+      - name: Checkout the source code
+        uses: actions/checkout@v4
 
-      - uses: conda-incubator/setup-miniconda@v2
-        name: "Prepare base dependencies"
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          activate-environment: pdbfixer-dev
-          environment-file: devtools/environment-dev.yaml
 
-      - name: "Install PDBFixer"
-        shell: bash -l {0}
+      - name: Install dependencies
         run: |
-          which python
-          python -V
-          pip install -e .
-          pytest -vs pdbfixer
+          python -m pip install --upgrade pip
+          python -m pip install -e .[tests]
+
+      - name: Run tests
+        run: |
+          pytest -vs tests
+      

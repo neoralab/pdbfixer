@@ -6,7 +6,7 @@ This is part of the OpenMM molecular simulation toolkit.
 See https://openmm.org/development.
 
 Portions copyright (c) 2013 Stanford University and the Authors.
-Authors: Peter Eastman
+Authors: Peter Eastman, Neoralab
 Contributors:
 
 Permission is hereby granted, free of charge, to any person obtaining a
@@ -28,8 +28,12 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 from __future__ import print_function
-__author__ = "Peter Eastman"
-__version__ = "1.0"
+__author__ = "Peter Eastman, Neoralab"
+from importlib.metadata import PackageNotFoundError, version
+try:
+    __version__ = version("pdbfixer")
+except PackageNotFoundError:
+    __version__ = "0+unknown"
 
 import openmm.app as app
 import openmm.app.element as elem
