@@ -18,6 +18,8 @@
 
 PDBFixer is a Python library for repairing and preparing Protein Data Bank (PDB) files before simulation. It focuses on an intuitive API that automates common cleanup steps so structures are ready for downstream workflows without manual editing.
 
+This Neoralab-maintained fork builds on the original OpenMM release, extending the codebase with modern packaging, documentation, and interface updates reflected in the refreshed manual.
+
 ## Overview
 
 PDBFixer can automatically:
@@ -29,7 +31,7 @@ PDBFixer can automatically:
 - Remove unwanted chains or heterogens.
 - Build a water box for explicit solvent simulations.
 
-Consult the [manual](https://htmlpreview.github.io/?https://github.com/openmm/pdbfixer/blob/master/Manual.html) for full usage guidance.
+Consult the responsive [manual](Manual.html) for full usage guidance. If browsing online, use the GitHub-hosted preview at [htmlpreview.github.io](https://htmlpreview.github.io/?https://github.com/openmm/pdbfixer/blob/master/Manual.html).
 
 ## Improvements over the OpenMM fork
 
